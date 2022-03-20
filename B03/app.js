@@ -4,8 +4,11 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var app = express();
+
+
 var expressLayouts = require('express-ejs-layouts');
 
+const systemConfig = require('./config/system');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -19,7 +22,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/theme', require('./routes/backend/theme'));
+//local variable
+app.locals.systemConfig = systemConfig;
+
+
+
+app.use(`/${systemConfig.prefix_admin}`, require('./routes/backend/index'));
 
 
 // catch 404 and forward to error handler
@@ -35,7 +43,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.render('./pages/error', { pageTitle: "Error"});
 });
 
 module.exports = app;

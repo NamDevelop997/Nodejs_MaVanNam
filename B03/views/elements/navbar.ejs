@@ -11,14 +11,14 @@
         <li class="nav-item dropdown user-menu">
             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
                 <img src="images/default-user.jpg" class="user-image img-circle elevation-2" alt="User Image">
-                <span class="d-none d-md-inline">Admintrator-Nam</span>
+                <span class="d-none d-md-inline"><%= systemConfig.full_name %></span>
             </a>
             <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                 <!-- User image -->
                 <li class="user-header bg-info">
                     <img src="images/default-user.jpg" class="img-circle elevation-2" alt="User Image">
 
-                    <p>Nam <small>admin</small></p>
+                    <p><%= systemConfig.full_name %><small>admin</small></p>
                 </li>
                 <!-- Menu Footer-->
                 <li class="user-footer">
