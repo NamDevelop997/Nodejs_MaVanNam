@@ -7,6 +7,23 @@ var app = express();
 
 
 var expressLayouts = require('express-ejs-layouts');
+const mongoose = require('mongoose');
+
+mongoose.connect('mongodb+srv://namdevelop997:ANHnam997@cluster0.yjegk.mongodb.net/nodejs?retryWrites=false&w=majority');
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  console.log('mongoDB connection success!');
+});
+
+const Cat = mongoose.model('todolist', { name: String });
+
+const kitty = new Cat({ name: 'Zildjia213' });
+kitty.save().then(() => {
+  console.log("add ok")
+});
+
+
 
 const systemConfig = require('./config/system');
 
