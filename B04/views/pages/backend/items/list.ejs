@@ -20,17 +20,15 @@
                     <a href="#" class="mr-1 btn btn-sm btn-secondary">Inactive <span
                             class="badge badge-pill badge-light">8</span></a>
                 </div>
-            
+
                 <div class="mb-1">
                     <form action="">
                         <div class="input-group">
                             <input type="text" class="form-control form-control-sm" name="search_value" value=""
                                 style="min-width: 300px">
                             <div class="input-group-append">
-                                <button type="button" class="btn btn-sm btn-danger"
-                                    id="btn-clear-search">Clear</button>
-                                <button type="button" class="btn btn-sm btn-info"
-                                    id="btn-search">Search</button>
+                                <button type="button" class="btn btn-sm btn-danger" id="btn-clear-search">Clear</button>
+                                <button type="button" class="btn btn-sm btn-info" id="btn-search">Search</button>
                             </div>
                         </div>
                     </form>
@@ -60,8 +58,7 @@
                         <option value="active">Active</option>
                         <option value="inactive">Inactive</option>
                     </select> <button id="bulk-apply" class="btn btn-sm btn-info">Apply <span
-                            class="badge badge-pill badge-danger navbar-badge"
-                            style="display: none"></span></button>
+                            class="badge badge-pill badge-danger navbar-badge" style="display: none"></span></button>
                 </div>
                 <div class="mb-1">
                     <a href="category-form.php" class="btn btn-sm btn-info"><i class="fas fa-plus"></i> Add
@@ -81,62 +78,66 @@
                             </th>
                             <th class="text-center">ID</th>
 
-                            <th class="">Name</th>
-                            
+                            <th class="text-center">Name</th>
+
                             <th class="text-center">Status</th>
-                            
+
                             <th class="text-center">Ordering</th>
-                           
+
                             <th class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
+                        <% items.forEach( (item, index) => { %>
+                            <tr>
+                                <td class="text-center">
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" type="checkbox" id="checkbox-5"
+                                            name="checkbox[]" value="5">
+                                        <label for="checkbox-5" class="custom-control-label"></label>
+                                    </div>
+                                </td>
+                                <td class="text-center"><%= index+=1 %> </td>
+                                <td class="text-center" style="min-width: 180px"><%= item.name %> </td>
+                                
+                                <td class="text-center">
+                                    <% include ./../../../helpers/status%> 
+                                    <%- statusHelper(item.status, "#") %>
+                                    
+                                </td> 
+                                
 
-                        <tr>
-                            <td class="text-center">
-                                <div class="custom-control custom-checkbox">
-                                    <input class="custom-control-input" type="checkbox" id="checkbox-5"
-                                        name="checkbox[]" value="5">
-                                    <label for="checkbox-5" class="custom-control-label"></label>
-                                </div>
-                            </td>
-                            <td class="text-center">5</td>
-                            <td class="text-wrap" style="min-width: 180px">Nuôi Con Không Phải Là Cuộc Chiến
-                                (Tái Bản 2020)</td>
-                        
-                            <td class="text-center"><a href="#" class="btn btn-success">Active</a></td>
-        
-                            <td class="text-center position-relative"><input type="number" name="chkOrdering[5]"
-                                    value="1"
-                                    class="chkOrdering form-control form-control-sm m-auto text-center"
-                                    style="width: 65px" id="chkOrdering[5]" data-id="5" min="1"></td>
-                           
-                            <td class="text-center">
-                                <a href="#" class="rounded-circle btn btn-sm btn-info" title="Edit">
-                                    <i class="fas fa-pencil-alt"></i>
-                                </a>
+                                <td class="text-center position-relative"><input type="number" name="chkOrdering[5]"
+                                        value="<%= item.ordering %>"
+                                        class="chkOrdering form-control form-control-sm m-auto text-center"
+                                        style="width: 65px" id="chkOrdering[5]" data-id="5" min="1"></td>
 
-                                <a href="#" class="rounded-circle btn btn-sm btn-danger" title="Delete">
-                                    <i class="fas fa-trash-alt"></i>
-                                </a>
-                            </td>
-                        </tr>
+                                <td class="text-center">
+                                    <a href="#" class="rounded-circle btn btn-sm btn-info" title="Edit">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
+
+                                    <a href="#" class="rounded-circle btn btn-sm btn-danger" title="Delete">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        <% }) %>
+                               
                     </tbody>
                 </table>
             </form>
         </div>
         <div class="card-footer clearfix">
             <ul class="pagination pagination-sm m-0 float-right">
-                <li class="page-item disabled"><a href="" class="page-link"><i
-                            class="fas fa-angle-double-left"></i></a></li>
-                <li class="page-item disabled"><a href="" class="page-link"><i
-                            class="fas fa-angle-left"></i></a></li>
+                <li class="page-item disabled"><a href="" class="page-link"><i class="fas fa-angle-double-left"></i></a>
+                </li>
+                <li class="page-item disabled"><a href="" class="page-link"><i class="fas fa-angle-left"></i></a></li>
                 <li class="page-item active"><a class="page-link">1</a></li>
                 <li class="page-item"><a class="page-link" href="#">2</a></li>
                 <li class="page-item"><a class="page-link" href="#">3</a></li>
                 <li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-right"></i></a></li>
-                <li class="page-item"><a class="page-link" href="#"><i
-                            class="fas fa-angle-double-right"></i></a></li>
+                <li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-double-right"></i></a></li>
             </ul>
         </div>
     </div>

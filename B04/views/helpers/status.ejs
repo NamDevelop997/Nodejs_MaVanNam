@@ -1,0 +1,19 @@
+<% statusHelper=(status, link)=> {
+    let classBtn = '';
+
+    switch(status) {
+        case "Active": 
+            classBtn = 'success';
+            break;
+
+        case "Inactive": 
+            classBtn = 'warning';
+            break;
+        default:
+            classBtn = 'infor'   ;
+            break;
+    }
+        return `<a href="${link}" class="btn btn-${classBtn}">${status}</a>`;
+    }
+
+    %>
