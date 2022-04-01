@@ -6,6 +6,7 @@
             <!-- <h3><%= JSON.stringify(filterStatus) %> </h3> -->
             <h6 class="card-title">Search &amp; Filter</h6>
             <div class="card-tools">
+                <a href="<%= systemConfig.prefix_admin %>/item %>" class="btn btn-sm btn-outline-danger" ><i class="fa fa-redo"></i></a>
                 <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip"
                     title="Collapse">
                     <i class="fas fa-minus"></i></button>
@@ -15,18 +16,18 @@
             <div class="row justify-content-between">
                 <div class="mb-1">
                     <% include ./../../../helpers/filterStatus %> 
-                    <%- filterStatusHelper(filterStatus) %>
+                    <%- filterStatusHelper(filterStatus, keyword) %>
                  
                 </div>
 
                 <div class="mb-1">
-                    <form action="">
+                    <form action="<%= systemConfig.prefix_admin %>/item/<%= currentStatus %>" method="GET">
                         <div class="input-group">
-                            <input type="text" class="form-control form-control-sm" name="search_value" value=""
+                            <input type="text" class="form-control form-control-sm" name="keyword" value="<%= keyword %>" placeholder="Enter the name..."
                                 style="min-width: 300px">
                             <div class="input-group-append">
-                                <button type="button" class="btn btn-sm btn-danger" id="btn-clear-search">Clear</button>
-                                <button type="button" class="btn btn-sm btn-info" id="btn-search">Search</button>
+                                <button type="submit" class="btn btn-sm btn-info" ><i class="fa fa-search"></i></button>
+                                <a href="<%= systemConfig.prefix_admin %>/item/<%= currentStatus %>" class="btn btn-sm btn-warning" ><i class="fa fa-times"></i></a>
                             </div>
                         </div>
                     </form>
