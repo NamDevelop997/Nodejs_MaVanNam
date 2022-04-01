@@ -97,7 +97,10 @@
                                     </div>
                                 </td>
                                 <td class="text-center"><%= index+=1 %> </td>
-                                <td class="text-center" style="min-width: 180px"><%= item.name %> </td>
+                                <td class="text-center" style="min-width: 180px">
+                                    <% include ./../../../helpers/highlight%> 
+                                    <%- highlightHelper(item.name, keyword) %>
+                                 </td>
                                 
                                 <td class="text-center">
                                     <% include ./../../../helpers/status%> 

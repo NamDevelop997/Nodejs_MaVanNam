@@ -22,12 +22,11 @@ router.get("(/:status)?", function (req, res, next) {
   let keyword = paramsHelpers.getParams(req.query, 'keyword', "");
   let filterStatus  = UtilsHelpers.filterStatus(currentStatus);
   
-  if(currentStatus === 'all' && keyword !== '') {
-      ObjWhere = {name : { $regex: keyword, $options: "i" }};
+  if(currentStatus === 'all'  ) {
+    if(keyword !== '') ObjWhere = {name : { $regex: keyword, $options: "i" }};
   }else {
       ObjWhere = {status : currentStatus, name : { $regex: keyword, $options: "i" }};
   }
-
 
   ItemsModel.find(ObjWhere).then((items) => {
     res.render("pages/backend/items/list", {
