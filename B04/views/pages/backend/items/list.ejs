@@ -3,6 +3,7 @@
     <!-- Search & Filter -->
     <div class="card card-info card-outline">
         <div class="card-header">
+            <h3><%= JSON.stringify(filterStatus) %> </h3>
             <h6 class="card-title">Search &amp; Filter</h6>
             <div class="card-tools">
                 <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip"
@@ -13,12 +14,9 @@
         <div class="card-body">
             <div class="row justify-content-between">
                 <div class="mb-1">
-                    <a href="#" class="mr-1 btn btn-sm btn-info">All <span
-                            class="badge badge-pill badge-light">15</span></a>
-                    <a href="#" class="mr-1 btn btn-sm btn-secondary">Active <span
-                            class="badge badge-pill badge-light">7</span></a>
-                    <a href="#" class="mr-1 btn btn-sm btn-secondary">Inactive <span
-                            class="badge badge-pill badge-light">8</span></a>
+                    <% include ./../../../helpers/filterStatus %> 
+                    <%- filterStatusHelper(filterStatus) %>
+                 
                 </div>
 
                 <div class="mb-1">

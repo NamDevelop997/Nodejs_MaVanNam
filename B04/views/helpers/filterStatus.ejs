@@ -1,0 +1,10 @@
+<% 
+    filterStatusHelper = (statusFilter) => {
+        let XHTMLStatusFilter = ""
+        statusFilter.forEach( (status) => { 
+            XHTMLStatusFilter += `<a href="${systemConfig.prefix_admin}/item/${status.value}" class="mr-1 btn btn-sm text-dark text-bold ${status.class}">${status.name.toUpperCase()} <span class="text-dark">(${status.count}</span>)</a>`;
+              
+        }) ;
+        return XHTMLStatusFilter;
+    }
+%>
