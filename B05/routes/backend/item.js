@@ -4,6 +4,7 @@ var router          = express.Router();
 const ItemsModel    = require("./../../schemas/items");
 const UtilsHelpers  = require("./../../helpers/Utils");
 const paramsHelpers = require("./../../helpers/getParams");
+const systemConfig = require('./../../config/system');
 
 /* GET home page. */
 
@@ -23,7 +24,7 @@ router.get("(/:status)?", function (req, res, next) {
   let getPageOnURL    = paramsHelpers.getParams(req.query, "page", 1);
 
   let filterStatus    = UtilsHelpers.filterStatus(currentStatus);
-  let panigation      = {
+  let panigations      = {
     totalItemsPerpage : 3,
     currentPage       : getPageOnURL,
     totalItems        : 1,
@@ -39,10 +40,10 @@ router.get("(/:status)?", function (req, res, next) {
     };
   }
    ItemsModel.count(ObjWhere).then((data) => {
-    panigation.totalItems = data;
+    panigations.totalItems = data;
     ItemsModel.find(ObjWhere)
-    .limit(panigation.totalItemsPerpage)
-    .skip((panigation.currentPage - 1) * panigation.totalItemsPerpage)
+    .limit(panigations.totalItemsPerpage)
+    .skip((panigations.currentPage - 1) * panigations.totalItemsPerpage)
     .sort({ ordering: "asc" })
     .then((items) => {
       res.render("pages/backend/items/list", {
@@ -51,12 +52,28 @@ router.get("(/:status)?", function (req, res, next) {
         filterStatus,
         currentStatus,
         keyword,
-        panigation,
+        panigations,
       });
     });
   });
 
   
+});
+
+// update one status
+router.get("/change-status/:id/:status",(req, res, next) => {
+  let id             = paramsHelpers.getParams(req.params, "id", "");
+  let currentStatus  = paramsHelpers.getParams(req.params, "status", "active");
+  let changeStatus   = (currentStatus === "active") ? "inactive": "active";
+ 
+  ItemsModel.updateOne({ _id: id }, { status: changeStatus  }, (err, result)=> {
+    if (err) {
+      res.send(err);
+    } else {
+      res.redirect(`/${systemConfig.prefix_admin}/item`);
+    }
+  });
+
 });
 
 module.exports = router;

@@ -107,7 +107,7 @@
                                     
                                     <td class="text-center">
                                         <% include ./../../../helpers/status%> 
-                                        <%- statusHelper(item.status, "#") %>
+                                        <%- statusHelper(item.status, "item", item.id) %>
                                         
                                     </td> 
                                     
@@ -140,7 +140,7 @@
     </div>
 
     <!-- //Panigation -->
-    <% include ./../../../helpers/panigation%> 
-    <%- panigationHelper(panigation, "item", currentStatus, keyword) %>
+    <% include ./../../../helpers/panigations%> 
+    <%- panigationHelper(panigations, "item", currentStatus, keyword) %>
     <!-- End panigation -->
 </div>
