@@ -76,9 +76,10 @@ router.get("/change-status/:id/:status",(req, res, next) => {
 
 });
 
+//delete one item
 router.get("/delete/:id/:status",(req, res, next) => {
   let id             = paramsHelpers.getParams(req.params, "id", "");
-  let currentStatus  = paramsHelpers.getParams(req.params, "status", "all");
+  // let currentStatus  = paramsHelpers.getParams(req.params, "status", "all");
 
   ItemsModel.findOneAndRemove({ _id: id }, (err, result)=> {
     if (err) {
@@ -88,6 +89,49 @@ router.get("/delete/:id/:status",(req, res, next) => {
     }
   });
 
+});
+
+
+router.post("/action",(req, res, next) => {
+  
+  let getAction = req.body.action;
+  let getCid    = req.body.cid;
+  console.log(getAction);
+  
+  if(getAction !== "" && getCid!== undefined) {
+    switch (getAction) {
+      case "active":
+            ItemsModel.updateMany({_id:getCid}, 
+              {status:getAction}, function (err, results) {
+              if (err){
+                  console.log(err)
+              }
+              else{
+                res.redirect(`/${systemConfig.prefix_admin}/item`);
+              }
+          });
+          break;
+
+      case "inactive":
+            ItemsModel.updateMany({_id : getCid}, 
+              {status : getAction}, function (err, results) {
+              if (err){
+                  console.log(err)
+              }
+              else{
+                res.redirect(`/${systemConfig.prefix_admin}/item`);
+              }
+          });
+         break;
+    
+      default:
+        break;
+    }
+  }else{
+    res.send("phai chon chuc nang va doi tuong muon thay doi");
+  }
+  
+  
 });
 
 module.exports = router;

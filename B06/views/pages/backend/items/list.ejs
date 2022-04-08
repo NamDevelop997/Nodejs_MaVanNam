@@ -48,15 +48,16 @@
         <% if(items.length >= 1){ %> 
             <div class="card-body">
                 <!-- Control -->
-
+            <form action="<%= systemConfig.prefix_admin %>/item/action" method="POST">
                 <div class="d-flex flex-wrap align-items-center justify-content-between mb-2">
                     <div class="mb-1">
-                        <select id="bulk-action" name="bulk-action" class="custom-select custom-select-sm mr-1"
+                        <select id="bulk-action" name="action" class="custom-select custom-select-sm mr-1"
                             style="width: unset">
-                            <option value="" selected="">Bulk Action</option>
-                            <option value="delete">Delete</option>
+                            <option value="" selected="">---Options---</option>
                             <option value="active">Active</option>
                             <option value="inactive">Inactive</option>
+                            <option value="ordering">Ordering</option>
+                            <option value="delete">Delete</option>
                         </select> <button id="bulk-apply" class="btn btn-sm btn-info">Apply <span
                                 class="badge badge-pill badge-danger navbar-badge" style="display: none"></span></button>
                     </div>
@@ -65,20 +66,18 @@
                             New</a>
                     </div>
                 </div>
+             
                 <!-- End control -->
 
                 <!-- List Content -->
-                <form action="" method="post" class="table-responsive" id="form-table">
+               
                     <table class="table table-bordered table-hover text-nowrap btn-table mb-0">
                         <thead>
                             <tr>
                                 <th class="text-center">
-                                    <div class="custom-control custom-checkbox">
-                                        <input class="custom-control-input" type="checkbox" id="check-all">
-                                        <label for="check-all" class="custom-control-label"></label>
-                                    </div>
+                                    <input type="checkbox" name="all" id="checkall"/>
                                 </th>
-                                <th class="text-center">ID</th>
+                                <th class="text-center">#</th>
 
                                 <th class="text-center">Name</th>
 
@@ -93,11 +92,8 @@
                             <% items.forEach( (item, index) => { %>
                                 <tr>
                                     <td class="text-center">
-                                        <div class="custom-control custom-checkbox">
-                                            <input class="custom-control-input" type="checkbox" id="checkbox-5"
-                                                name="checkbox[]" value="5">
-                                            <label for="checkbox-5" class="custom-control-label"></label>
-                                        </div>
+                                        <input class="cb-element" type="checkbox" id="checkbox-5"
+                                            name="cid" value="<%= item._id %>">
                                     </td>
                                     <td class="text-center"><%= index+=1 %> </td>
                                     <td class="text-center" style="min-width: 180px">
@@ -112,10 +108,10 @@
                                     </td> 
                                     
 
-                                    <td class="text-center position-relative"><input type="number" name="chkOrdering[5]"
+                                    <td class="text-center position-relative"><input type="number" name="ordering"
                                             value="<%= item.ordering %>"
                                             class="chkOrdering form-control form-control-sm m-auto text-center"
-                                            style="width: 65px" id="chkOrdering[5]" data-id="5" min="1"></td>
+                                            style="width: 65px" min="1"></td>
 
                                     <td class="text-center">
                                         <a href="#" class="rounded-circle btn btn-sm btn-info" title="Edit">
@@ -152,7 +148,7 @@
                                 
                         </tbody>
                     </table>
-                </form>
+        </form>
                 <!-- End list content -->
             </div>
          <% }else{ %>
