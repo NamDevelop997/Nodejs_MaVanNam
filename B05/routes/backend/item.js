@@ -65,8 +65,22 @@ router.get("/change-status/:id/:status",(req, res, next) => {
   let id             = paramsHelpers.getParams(req.params, "id", "");
   let currentStatus  = paramsHelpers.getParams(req.params, "status", "active");
   let changeStatus   = (currentStatus === "active") ? "inactive": "active";
- 
+  
   ItemsModel.updateOne({ _id: id }, { status: changeStatus  }, (err, result)=> {
+    if (err) {
+      res.send(err);
+    } else {
+      res.redirect(`/${systemConfig.prefix_admin}/item`);
+    }
+  });
+
+});
+
+router.get("/delete/:id/:status",(req, res, next) => {
+  let id             = paramsHelpers.getParams(req.params, "id", "");
+  let currentStatus  = paramsHelpers.getParams(req.params, "status", "all");
+
+  ItemsModel.findOneAndRemove({ _id: id }, (err, result)=> {
     if (err) {
       res.send(err);
     } else {

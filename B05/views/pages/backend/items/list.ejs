@@ -121,12 +121,33 @@
                                         <a href="#" class="rounded-circle btn btn-sm btn-info" title="Edit">
                                             <i class="fas fa-pencil-alt"></i>
                                         </a>
-
-                                        <a href="#" class="rounded-circle btn btn-sm btn-danger" title="Delete">
+                                        
+                                        <a  href="<%= systemConfig.prefix_admin %>/item/delete/<%= item._id %>/<%= item.status %>" class="rounded-circle btn btn-sm btn-danger" data-toggle="modal" data-target="#modal-delete" title="Delete">
                                             <i class="fas fa-trash-alt"></i>
                                         </a>
+    
+                                          <!-- Modal -->
+                                          <div class="modal fade" id="modal-delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                              <div class="modal-content bg-warning border-warning">
+                                                <div class="modal-header border-0">
+                                                  <h5 class="modal-title" id="exampleModalLabel">Are you want delete this item?</h5>
+                                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                  </button>
+                                                </div>
+                                               
+                                                <div class="modal-footer border-0">
+                                                    <a href="<%= systemConfig.prefix_admin %>/item/delete/<%= item._id %>/<%= item.status %>" class=" btn btn-sm btn-danger" title="Delete">
+                                                      Confirm    
+                                                    </a>
+                                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
                                     </td>
-                                </tr>
+                                </tr>   
                             <% }) %>
                                 
                         </tbody>
