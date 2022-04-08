@@ -102,9 +102,9 @@ router.post("/action",(req, res, next) => {
     switch (getAction) {
       case "active":
             ItemsModel.updateMany({_id:getCid}, 
-              {status:getAction}, function (err, results) {
+              {status:getAction}, (err, results) => {
               if (err){
-                  console.log(err)
+                  console.log(err);
               }
               else{
                 res.redirect(`/${systemConfig.prefix_admin}/item`);
@@ -114,9 +114,20 @@ router.post("/action",(req, res, next) => {
 
       case "inactive":
             ItemsModel.updateMany({_id : getCid}, 
-              {status : getAction}, function (err, results) {
+              {status : getAction},  (err, results) =>{
               if (err){
-                  console.log(err)
+                  console.log(err);
+              }
+              else{
+                res.redirect(`/${systemConfig.prefix_admin}/item`);
+              }
+          });
+         break;
+        
+         case "delete":
+            ItemsModel.deleteMany({_id : getCid},(err, results) => {
+              if (err){
+                  console.log(err);
               }
               else{
                 res.redirect(`/${systemConfig.prefix_admin}/item`);
@@ -128,7 +139,7 @@ router.post("/action",(req, res, next) => {
         break;
     }
   }else{
-    res.send("phai chon chuc nang va doi tuong muon thay doi");
+    res.send("Vui lòng chọn chức năng và click vào đối tượng muốn thay đổi!");
   }
   
   
