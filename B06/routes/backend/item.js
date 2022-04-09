@@ -96,20 +96,20 @@ router.post("/action",(req, res, next) => {
   
   let getAction = req.body.action;
   let getCid    = req.body.cid;
-  console.log(getAction);
-  
+  let getOrdering   =req.body.ordering;
+   
   if(getAction !== "" && getCid!== undefined) {
     switch (getAction) {
       case "active":
-            ItemsModel.updateMany({_id:getCid}, 
-              {status:getAction}, (err, results) => {
-              if (err){
-                  console.log(err);
-              }
-              else{
-                res.redirect(`/${systemConfig.prefix_admin}/item`);
-              }
-          });
+          ItemsModel.updateMany({_id:getCid}, 
+            {status:getAction}, function (err, results) {
+            if (err){
+                console.log(err)
+            }
+            else{
+              res.redirect(`/${systemConfig.prefix_admin}/item`);
+            }
+        });
           break;
 
       case "inactive":
@@ -124,7 +124,7 @@ router.post("/action",(req, res, next) => {
           });
          break;
         
-         case "delete":
+      case "delete":
             ItemsModel.deleteMany({_id : getCid},(err, results) => {
               if (err){
                   console.log(err);
@@ -133,7 +133,24 @@ router.post("/action",(req, res, next) => {
                 res.redirect(`/${systemConfig.prefix_admin}/item`);
               }
           });
-         break;
+           break;
+      case "ordering":
+        if (Array.isArray(getCid)) {
+           getCid.forEach((item, index) => {
+              ItemsModel.updateOne({_id : item},{ordering: parseInt(getOrdering[index]) },(err, results) => {});
+            }); 
+            res.redirect(`/${systemConfig.prefix_admin}/item`);
+        }else{
+
+          ItemsModel.updateOne({_id : getCid},{ordering: parseInt(getOrdering) },(err, results) => {
+            if (err) {
+              console.log(err);
+            }else{
+              res.redirect(`/${systemConfig.prefix_admin}/item`);
+            }
+          });   
+        }
+        break;
     
       default:
         break;
