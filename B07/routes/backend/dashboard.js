@@ -1,10 +1,20 @@
-var express = require('express');
-var router = express.Router();
+var express         = require('express');
+var router          = express.Router();
+
+const ItemsModel    = require("./../../schemas/items");
+
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('pages/backend/dashboard/index', { pageTitle: 'Dashboard' });
+router.get('/', async(req, res, next) => {
+  let countItems = 0 ;
+  await ItemsModel.count({}).then((count) => {
+    countItems = count;
+  });
+  
+  res.render('pages/backend/dashboard/index', { pageTitle: 'Dashboard' , countItems });
 });
+
+
 
 
 

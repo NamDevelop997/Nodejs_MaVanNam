@@ -24,7 +24,7 @@ router.get("(/:status)?", function (req, res, next) {
   let getPageOnURL    = paramsHelpers.getParams(req.query, "page", 1);
 
   let filterStatus    = UtilsHelpers.filterStatus(currentStatus);
-  let panigations      = {
+  let panigations     = {
     totalItemsPerpage : 3,
     currentPage       : getPageOnURL,
     totalItems        : 1,
