@@ -1,9 +1,25 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
-var cookieParser = require('cookie-parser');
+// var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+
+const flash = require('express-flash-notification');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+
 var app = express();
+
+app.use(cookieParser());
+app.use(session({
+  secret: 'keyboard cat',
+  // resave: false,
+  // saveUninitialized: true,
+  // cookie: { secure: true }
+}));
+app.use(flash(app,{
+  viewName: 'pages/backend/notification',
+}));
 
 
 var expressLayouts = require('express-ejs-layouts');

@@ -4,7 +4,7 @@ var router          = express.Router();
 const ItemsModel    = require("./../../schemas/items");
 const UtilsHelpers  = require("./../../helpers/Utils");
 const paramsHelpers = require("./../../helpers/getParams");
-const systemConfig = require('./../../config/system');
+const systemConfig  = require('./../../config/system');
 
 /* GET home page. */
 
@@ -70,6 +70,7 @@ router.get("/change-status/:id/:status",(req, res, next) => {
     if (err) {
       res.send(err);
     } else {
+      req.flash('success' , `Changes status success!`, false);
       res.redirect(`/${systemConfig.prefix_admin}/item`);
     }
   });
@@ -85,6 +86,7 @@ router.get("/delete/:id/:status",(req, res, next) => {
     if (err) {
       res.send(err);
     } else {
+      req.flash('success' , `Delete entries success!`, false);
       res.redirect(`/${systemConfig.prefix_admin}/item`);
     }
   });
@@ -94,9 +96,10 @@ router.get("/delete/:id/:status",(req, res, next) => {
 
 router.post("/action",(req, res, next) => {
   
-  let getAction = req.body.action;
-  let getCid    = req.body.cid;
-  let getOrdering   =req.body.ordering;
+  let getAction     = req.body.action;
+  let getCid        = req.body.cid;
+  let getOrdering   = req.body.ordering;
+  let count         = 0;        
    
   if(getAction !== "" && getCid!== undefined) {
     switch (getAction) {
@@ -107,7 +110,10 @@ router.post("/action",(req, res, next) => {
                 console.log(err)
             }
             else{
+              count  = results.modifiedCount;
+              req.flash('success' , `Change status ${count} entries success!`, false);
               res.redirect(`/${systemConfig.prefix_admin}/item`);
+              // res.end();
             }
         });
           break;
@@ -119,6 +125,8 @@ router.post("/action",(req, res, next) => {
                   console.log(err);
               }
               else{
+                count  = results.modifiedCount;
+                req.flash('success' , `Change status ${count} entries success!`, false);
                 res.redirect(`/${systemConfig.prefix_admin}/item`);
               }
           });
@@ -130,15 +138,21 @@ router.post("/action",(req, res, next) => {
                   console.log(err);
               }
               else{
+                count = results.deletedCount;
+                req.flash('success' , `Delete ${count} entries success!`, false);
                 res.redirect(`/${systemConfig.prefix_admin}/item`);
               }
           });
            break;
       case "ordering":
         if (Array.isArray(getCid)) {
+           count = getCid.length;
            getCid.forEach((item, index) => {
-              ItemsModel.updateOne({_id : item},{ordering: parseInt(getOrdering[index]) },(err, results) => {});
+              ItemsModel.updateOne({_id : item},{ordering: parseInt(getOrdering[index]) },(err, results) => {
+              });
+
             }); 
+            req.flash('success' , `Change ordering ${count} entries success!`, false);
             res.redirect(`/${systemConfig.prefix_admin}/item`);
         }else{
 
@@ -146,6 +160,8 @@ router.post("/action",(req, res, next) => {
             if (err) {
               console.log(err);
             }else{
+             
+              req.flash('success' , "Change ordering success!", false);
               res.redirect(`/${systemConfig.prefix_admin}/item`);
             }
           });   
@@ -155,10 +171,7 @@ router.post("/action",(req, res, next) => {
       default:
         break;
     }
-  }else{
-    res.send("Vui lòng chọn chức năng và click vào đối tượng muốn thay đổi!");
   }
-  
   
 });
 
