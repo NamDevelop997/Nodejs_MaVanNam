@@ -1,0 +1,19 @@
+<% statusHelper=(status, type, id)=> {
+    let classBtn = '';
+    let links    =  `${systemConfig.prefix_admin}/${type}/change-status/${id}/${status}`;
+
+    switch(status) {
+        case "active": 
+            classBtn = 'success';
+            break;
+
+        case "inactive": 
+            classBtn = 'warning';
+            break;
+        default:
+            classBtn = 'infor'   ;
+            break;
+    }
+        return `<a href="${links}"><p class="bg-${classBtn} rounded" style="display: inline;padding: 4px 11px;">${status}</p></a>`;
+}
+%>

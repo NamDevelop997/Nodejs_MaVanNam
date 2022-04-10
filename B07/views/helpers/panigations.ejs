@@ -1,0 +1,96 @@
+<% 
+    panigationHelper = (panigation, type, currentStatus, keyword) => {
+            let  totalItems          = panigation.totalItems;
+            let  currentPage         =  parseInt(panigation.currentPage);
+        //   console.log(currentStatus);
+          
+            let  totalItemsPerpage   = panigation.totalItemsPerpage;
+            let  totalPages          = Math.ceil(totalItems / totalItemsPerpage);
+            
+            let  to                  = totalItemsPerpage * currentPage ;
+            let  from                = to - totalItemsPerpage +  1;
+            if  (to > totalItems) to = totalItems;
+
+            let xhtmlPaginations     = '';
+            if (totalPages > 1){
+                let links            =  `${systemConfig.prefix_admin}/${type}/${currentStatus}`;
+
+                if(keyword != ''){
+                    links           += `&keyword=${keyword}`;
+                }
+                let xhtmlPage        = '';
+                let xhtmlStart       = '' ;
+                let xhtmlPrev        = '' ;
+                let xhtmlNext        = `<li class="page-item"><a class="page-link" href="${links}?page=${currentPage + 1}"><i class="fas fa-angle-right"></i></a></li>` ;
+                let xhtmlEnd         = `<li class="page-item"><a class="page-link" href="${links}?page=${totalPages}"><i class="fas fa-angle-double-right"></i></a></li>` ;
+                
+                if (currentPage > 1){
+                    xhtmlStart       = `<li class="page-item "><a href="${links}?page=1" class="page-link"><i class="fas fa-angle-double-left"></i></a></li>`;
+                    xhtmlPrev        = `<li class="page-item"><a href="${links}?page=${currentPage - 1}" class="page-link"><i class="fas fa-angle-left"></i></a></li>`;
+                } ;
+                
+                if (currentPage >= totalPages) {
+                    xhtmlNext        = '';
+                    xhtmlEnd         = '';
+                    currentPage      = totalPages;
+                }
+                let pageRanges       = panigation.pageRanges;
+                let middle           = Math.ceil(pageRanges/2);
+                let min              = currentPage - middle + 1; 
+                let max              = min + pageRanges - 1;
+
+                if (min <= 1) {
+                    min = 1;
+                    max = pageRanges;
+                }
+                if (max >= totalPages) {
+                    max = totalPages;
+                    min = ((max - pageRanges + 1)<=1)? 1 :(max - pageRanges + 1);
+                }
+
+                for(let i = min; i <= max; i++) {
+        
+                    if (currentPage === i) {
+                        xhtmlPage += `<li class="page-item active"><a class="page-link">${i}</a></li>`;
+                    }else{
+                        xhtmlPage += `<li class="page-item"><a class="page-link" href="${links}?page=${i}">${i}</a></li>`;
+
+                    }
+                }
+
+                xhtmlPaginations     = '<ul class="pagination pagination-sm m-0 float-right">' 
+                                                + xhtmlStart 
+                                                + xhtmlPrev 
+                                                + xhtmlPage
+                                                + xhtmlNext 
+                                                + xhtmlEnd +
+                                        '</ul>';
+                    
+            }
+            
+
+        return `
+            <div class="card card-primary border border-primary mt-3">
+                <div class="card-header d-flex justify-content-between">
+                    <div class="card-header-left col-6 ">
+                        <h6>Panigation</h6>
+                    </div>
+                    <div class="card-header-right col-6 text-right">
+                        <p class="d-inline mr-3 bg-success p-1 text-bold  rounded">Total entries: ${totalItems}</p>
+                        <p class="d-inline mr-3 bg-warning p-1 text-bold  rounded">Total pages: ${totalPages}</p>
+                    </div>
+                </div>
+                <div class="card-body d-flex justify-content-between">
+                    <div class="card-body-left col-6" style="display: block">
+                        <div>Number of elements on the page: <span class="text-primary text-bold">${totalItemsPerpage}</span></div>
+                        <div>Showing <span class="text-primary text-bold">${from} </span> to <span class="text-primary text-bold">${to}</span> of <span class="text-primary  text-bold">${totalItems} </span>entries.</div>
+                    </div>
+                    <div class="card-body-right col-6 " style="display: block">
+                        ${xhtmlPaginations}
+                    </div>
+                </div>
+            </div>
+       `;
+    }
+%>
+
