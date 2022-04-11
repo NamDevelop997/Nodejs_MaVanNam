@@ -66,7 +66,7 @@
                                 class="badge badge-pill badge-danger navbar-badge" style="display: none"></span></button>
                     </div>
                     <div class="mb-1">
-                        <a href="category-form.php" class="btn btn-sm btn-info"><i class="fas fa-plus"></i> Add
+                        <a href="<%= systemConfig.prefix_admin %>/item/form" class="btn btn-sm btn-info"><i class="fas fa-plus"></i> Add
                             New</a>
                     </div>
                 </div>
@@ -119,7 +119,7 @@
                                     </td>
 
                                     <td class="text-center">
-                                        <a href="#" class="rounded-circle btn btn-sm btn-info" title="Edit">
+                                        <a href="<%= systemConfig.prefix_admin %>/item/form/<%= item._id %>" class="rounded-circle btn btn-sm btn-info" title="Edit">
                                             <i class="fas fa-pencil-alt"></i>
                                         </a>
                                         
@@ -157,12 +157,15 @@
                 <!-- End list content -->
             </div>
          <% }else{ %>
-            <h5 class="card-body alert alert-warning text-center">Sorry!, We couldn't find any results</h5>
+            <div class="card-body alert alert-warning text-center">Sorry!, We couldn't find any results</div>
          <% } %>       
     </div>
 
     <!-- //Panigation -->
-    <% include ./../../../helpers/panigations%> 
-    <%- panigationHelper(panigations, "item", currentStatus, keyword) %>
+    <% if(items.length > 0){%>
+
+        <% include ./../../../helpers/panigations%> 
+        <%- panigationHelper(panigations, "item", currentStatus, keyword) %>
+    <%} %> 
     <!-- End panigation -->
 </div>

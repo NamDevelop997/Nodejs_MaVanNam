@@ -6,18 +6,56 @@ const UtilsHelpers  = require("./../../helpers/Utils");
 const paramsHelpers = require("./../../helpers/getParams");
 const systemConfig  = require('./../../config/system');
 
-/* GET home page. */
+const pageTitle     = "Item Management - ";
+const pageTitleAdd  = pageTitle + "Add";
+const pageTitleEdit = pageTitle + "Edit";
+const pageTitleList = pageTitle + "List";
+const linksIndex    = `/${systemConfig.prefix_admin}/item`;
 
-router.get("/form", function (req, res, next) {
-  res.render("pages/backend/items/form", { pageTitle: "Form items - Add" });
+
+//Get Form: Add or Edit
+router.get("/form(/:id)?",  (req, res, next) => {
+  let getId  = paramsHelpers.getParams(req.params, "id", "");
+  let data   = {
+    _id       : '',
+    name      : '',
+    ordering  : '',
+    status    : ''
+  }
+  
+  if( getId === "" ){ //form Add
+    res.render("pages/backend/items/form", {data,  pageTitle  : pageTitleAdd });
+  }else{
+     //form Edit
+    ItemsModel.findById({_id : getId}).then((data) =>{
+      res.render("pages/backend/items/form", { data, pageTitle  : pageTitleEdit });
+    });
+  }
 });
 
-router.get("/login", function (req, res, next) {
+// Handle data form 
+router.post("/form", (req, res, next) => {
+  console.log(req.body);
+  let item = {
+    name : req.body.name,
+    ordering : parseInt(req.body.ordering),
+    status : req.body.status,
+  }
+  // Save item 
+  new ItemsModel(item).save().then( () => {
+    req.flash('success', "Successfully added new item!", false)
+    res.redirect(linksIndex);
+  }); 
+  
+  
+});
+
+router.get("/login", (req, res, next) => {
   res.render("pages/frontend/login", { pageTitle: "Login", layout: false });
 });
 
 //filter by status
-router.get("(/:status)?", function (req, res, next) {
+router.get("(/:status)?", (req, res, next) => {
   let ObjWhere        = {};
   let currentStatus   = paramsHelpers.getParams(req.params, "status", "all");
   let keyword         = paramsHelpers.getParams(req.query, "keyword", "");
@@ -25,7 +63,7 @@ router.get("(/:status)?", function (req, res, next) {
 
   let filterStatus    = UtilsHelpers.filterStatus(currentStatus);
   let panigations     = {
-    totalItemsPerpage : 3,
+    totalItemsPerpage : 5,
     currentPage       : getPageOnURL,
     totalItems        : 1,
     pageRanges        : 3
@@ -47,7 +85,7 @@ router.get("(/:status)?", function (req, res, next) {
     .sort({ ordering: "asc" })
     .then((items) => {
       res.render("pages/backend/items/list", {
-        pageTitle: "Items list page",
+        pageTitle: pageTitleList,
         items,
         filterStatus,
         currentStatus,
@@ -71,29 +109,28 @@ router.get("/change-status/:id/:status",(req, res, next) => {
       res.send(err);
     } else {
       req.flash('success' , `Changes status success!`, false);
-      res.redirect(`/${systemConfig.prefix_admin}/item`);
+      res.redirect(linksIndex);
     }
   });
 
 });
 
-//delete one item
+//Delete one item
 router.get("/delete/:id/:status",(req, res, next) => {
   let id             = paramsHelpers.getParams(req.params, "id", "");
-  // let currentStatus  = paramsHelpers.getParams(req.params, "status", "all");
 
   ItemsModel.findOneAndRemove({ _id: id }, (err, result)=> {
     if (err) {
       res.send(err);
     } else {
       req.flash('success' , `Delete entries success!`, false);
-      res.redirect(`/${systemConfig.prefix_admin}/item`);
+      res.redirect(linksIndex);
     }
   });
 
 });
 
-
+//  Action multil CRUD and change ordering for items
 router.post("/action",(req, res, next) => {
   
   let getAction     = req.body.action;
@@ -112,8 +149,7 @@ router.post("/action",(req, res, next) => {
             else{
               count  = results.modifiedCount;
               req.flash('success' , `Change status ${count} entries success!`, false);
-              res.redirect(`/${systemConfig.prefix_admin}/item`);
-              // res.end();
+              res.redirect(linksIndex);
             }
         });
           break;
@@ -127,7 +163,7 @@ router.post("/action",(req, res, next) => {
               else{
                 count  = results.modifiedCount;
                 req.flash('success' , `Change status ${count} entries success!`, false);
-                res.redirect(`/${systemConfig.prefix_admin}/item`);
+                res.redirect(linksIndex);
               }
           });
          break;
@@ -140,7 +176,7 @@ router.post("/action",(req, res, next) => {
               else{
                 count = results.deletedCount;
                 req.flash('success' , `Delete ${count} entries success!`, false);
-                res.redirect(`/${systemConfig.prefix_admin}/item`);
+                res.redirect(linksIndex);
               }
           });
            break;
@@ -153,8 +189,8 @@ router.post("/action",(req, res, next) => {
 
             }); 
             req.flash('success' , `Change ordering ${count} entries success!`, false);
-            res.redirect(`/${systemConfig.prefix_admin}/item`);
-        }else{
+            res.redirect(linksIndex);
+          }else{
 
           ItemsModel.updateOne({_id : getCid},{ordering: parseInt(getOrdering) },(err, results) => {
             if (err) {
@@ -162,7 +198,7 @@ router.post("/action",(req, res, next) => {
             }else{
              
               req.flash('success' , "Change ordering success!", false);
-              res.redirect(`/${systemConfig.prefix_admin}/item`);
+              res.redirect(linksIndex);
             }
           });   
         }

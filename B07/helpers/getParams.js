@@ -6,8 +6,6 @@ getParams = (params, property, defaultValue) => {
   return defaultValue;
 }
 
-
-
 module.exports = {
   getParams
 };

@@ -7,7 +7,7 @@ const ItemsModel    = require("./../../schemas/items");
 /* GET home page. */
 router.get('/', async(req, res, next) => {
   let countItems = 0 ;
-  await ItemsModel.count({}).then((count) => {
+  await ItemsModel.count({}).then((count) => { //get count Items
     countItems = count;
   });
   
