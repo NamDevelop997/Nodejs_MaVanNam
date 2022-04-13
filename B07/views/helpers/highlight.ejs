@@ -2,7 +2,7 @@
     highlightHelper = (name, search) => {
       if(search.length > 0) {
         return name.replace ( new RegExp(search, 'gi'), (searchResults) =>{
-          return `<span style="background-color: orange; " class=" text-bold">${searchResults}</span>`;
+          return `<span style="background-color: yellow; " class=" text-bold">${searchResults}</span>`;
         });
       }
        return name;

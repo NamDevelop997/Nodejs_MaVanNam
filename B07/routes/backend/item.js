@@ -1,10 +1,14 @@
 var express         = require("express");
 var router          = express.Router();
 
+const {check, body,validationResult}     = require('express-validator');    
+
+
 const ItemsModel    = require("./../../schemas/items");
 const UtilsHelpers  = require("./../../helpers/Utils");
 const paramsHelpers = require("./../../helpers/getParams");
 const systemConfig  = require('./../../config/system');
+const validateItems = require('../../validations/item')
 
 const pageTitle     = "Item Management - ";
 const pageTitleAdd  = pageTitle + "Add";
@@ -15,39 +19,53 @@ const linksIndex    = `/${systemConfig.prefix_admin}/item`;
 
 //Get Form: Add or Edit
 router.get("/form(/:id)?",  (req, res, next) => {
+  
+  let errors = ""; 
   let getId  = paramsHelpers.getParams(req.params, "id", "");
   let data   = {
-    _id       : '',
-    name      : '',
-    ordering  : '',
-    status    : ''
+    _id       : "",
+    name      : "",
+    ordering  : "",
+    status    : ""
   }
   
   if( getId === "" ){ //form Add
-    res.render("pages/backend/items/form", {data,  pageTitle  : pageTitleAdd });
+    res.render("pages/backend/items/form", {data,  pageTitle  : pageTitleAdd,  errors});
   }else{
      //form Edit
     ItemsModel.findById({_id : getId}).then((data) =>{
-      res.render("pages/backend/items/form", { data, pageTitle  : pageTitleEdit });
+      res.render("pages/backend/items/form", { data, pageTitle  : pageTitleEdit,errors});
     });
   }
 });
 
 // Handle data form 
-router.post("/form", (req, res, next) => {
-  console.log(req.body);
-  let item = {
-    name : req.body.name,
-    ordering : parseInt(req.body.ordering),
-    status : req.body.status,
-  }
-  // Save item 
-  new ItemsModel(item).save().then( () => {
-    req.flash('success', "Successfully added new item!", false)
-    res.redirect(linksIndex);
-  }); 
-  
-  
+router.post("/save", validateItems.validatorItems() ,(req, res, next) => {
+    let errors = validationResult(req).array();
+    let data   = {
+      _id       : "",
+      name      : "",
+      ordering  : "",
+      status    : ""
+    }
+    if (errors.length <= 0) { //not errs
+        let item = {
+        name     : req.body.name,
+        ordering : parseInt(req.body.ordering),
+        status   : req.body.status,
+      }
+      // Save item 
+      
+      new ItemsModel(item).save().then( () => {
+        req.flash('success', "Successfully added new item!", false)
+        res.redirect(linksIndex);
+      }); 
+    }else{ // have err
+      console.log(errors.length);
+        res.render("pages/backend/items/form", { pageTitle  : pageTitleAdd, data, errors} );
+      //  next()
+    }
+
 });
 
 router.get("/login", (req, res, next) => {

@@ -1,14 +1,13 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-// var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+var createError     = require('http-errors');
+var express         = require('express');
+var path            = require('path');
+var logger          = require('morgan');
 
-const flash = require('express-flash-notification');
-const cookieParser = require('cookie-parser');
-const session = require('express-session');
+const flash         = require('express-flash-notification');
+const cookieParser  = require('cookie-parser');
+const session       = require('express-session');
 
-var app = express();
+var app             = express();
 
 app.use(cookieParser());
 app.use(session({
@@ -17,9 +16,13 @@ app.use(session({
   // saveUninitialized: true,
   // cookie: { secure: true }
 }));
+
+// app.use(validator());
 app.use(flash(app,{
   viewName: 'pages/backend/notification',
 }));
+
+// app.use(body(),);
 
 
 var expressLayouts = require('express-ejs-layouts');
