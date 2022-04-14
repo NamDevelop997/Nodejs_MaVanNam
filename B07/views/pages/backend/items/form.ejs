@@ -1,6 +1,11 @@
+<%  
+        const page       =    "items";
+        const linkPrefix = `${systemConfig.prefix_admin}/${page}/`;
+%> 
+
 
 <section class="content">
-    <form action="<%= systemConfig.prefix_admin %>/item/save" method="POST" class="mb-0" id="admin-form">
+    <form action="<%= linkPrefix %>save" method="POST" class="mb-0" id="admin-form">
         <div class="container-fluid"> 
             <div class="card card-info card-outline mb-0">
                 <!-- <div class="card-body"> -->
@@ -46,7 +51,7 @@
                     <div class="col-12 col-sm-8 offset-sm-2" id = "btn-submit">
                         <button type="submit" class="btn btn-sm btn-success mr-1">Save</button>
                         
-                        <a href="<%= systemConfig.prefix_admin %>/item" class="btn btn-sm btn-danger mr-1"> Cancel</a>
+                        <a href="<%= linkPrefix %>" class="btn btn-sm btn-danger mr-1"> Cancel</a>
                     </div>
                 </div>
                 

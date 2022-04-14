@@ -1,5 +1,6 @@
 var express         = require("express");
 var router          = express.Router();
+const util          = require('util');
 
 const {check, body,validationResult}     = require('express-validator');    
 
@@ -8,14 +9,16 @@ const ItemsModel    = require("./../../schemas/items");
 const UtilsHelpers  = require("./../../helpers/Utils");
 const paramsHelpers = require("./../../helpers/getParams");
 const systemConfig  = require('./../../config/system');
-const validateItems = require('../../validations/item')
+const validateItems = require('../../validations/item');
+const notify        = require('../../config/notify');
 
 const pageTitle     = "Item Management - ";
 const pageTitleAdd  = pageTitle + "Add";
 const pageTitleEdit = pageTitle + "Edit";
 const pageTitleList = pageTitle + "List";
-const linksIndex    = `/${systemConfig.prefix_admin}/item`;
-
+const linksIndex    = `/${systemConfig.prefix_admin}/items`;
+const folderViewBe  = "pages/backend/items/";
+const folderViewFe  = "pages/frontend/";
 
 //Get Form: Add or Edit
 router.get("/form(/:id)?",  (req, res, next) => {
@@ -59,7 +62,7 @@ router.post("/save", validateItems.validatorItems() ,(req, res, next) => {
                               filter, (err, result)=> {if (err) {
                                           res.send(err);
                                         } else {
-                                          req.flash('success' , `Update item success!`, false);
+                                          req.flash('success' , notify.UPDATE_SUCCESS, false);
                                           res.redirect(linksIndex);
                                         }
          });
@@ -67,24 +70,24 @@ router.post("/save", validateItems.validatorItems() ,(req, res, next) => {
       }else{
         // Handler add 
         new ItemsModel(filter).save().then( () => {
-          req.flash('success', "Successfully added new item!", false)
+          req.flash('success', notify.ADD_SUCCESS, false)
           res.redirect(linksIndex);
         }); 
       } 
        
     }else{
       // Hander have errors
-      res.render("pages/backend/items/form", { pageTitle  : pageTitleAdd, data, errors} );
+      res.render(`${folderViewBe}form`, { pageTitle  : pageTitleAdd, data, errors} );
     }
      
 });
 
 router.get("/login", (req, res, next) => {
-  res.render("pages/frontend/login", { pageTitle: "Login", layout: false });
+  res.render(`${folderViewFe}login`, { pageTitle: "Login", layout: false });
 });
 
 //filter by status
-router.get("(/:status)?", (req, res, next) => {
+router.get("(/:status)?",async (req, res, next) => {
   let ObjWhere        = {};
   let currentStatus   = paramsHelpers.getParams(req.params, "status", "all");
   let keyword         = paramsHelpers.getParams(req.query, "keyword", "");
@@ -106,24 +109,24 @@ router.get("(/:status)?", (req, res, next) => {
       name: { $regex: keyword, $options: "i" },
     };
   }
-   ItemsModel.count(ObjWhere).then((data) => {
-    panigations.totalItems = data;
-    ItemsModel.find(ObjWhere)
-    .limit(panigations.totalItemsPerpage)
-    .skip((panigations.currentPage - 1) * panigations.totalItemsPerpage)
-    .sort({ name: 1 })
-    .then((items) => {
-      res.render("pages/backend/items/list", {
-        pageTitle: pageTitleList,
-        items,
-        filterStatus,
-        currentStatus,
-        keyword,
-        panigations,
-      });
-    });
+   await ItemsModel.count(ObjWhere).then((data) => {
+         panigations.totalItems = data;
+    
   });
-
+     ItemsModel.find(ObjWhere)
+          .limit(panigations.totalItemsPerpage)
+          .skip((panigations.currentPage - 1) * panigations.totalItemsPerpage)
+          .sort({ name: 1 })
+          .then((items) => {
+            res.render(`${folderViewBe}list`, {
+              pageTitle: pageTitleList,
+              items,
+              filterStatus,
+              currentStatus,
+              keyword,
+              panigations,
+            });
+          });
   
 });
 
@@ -137,7 +140,7 @@ router.get("/change-status/:id/:status",(req, res, next) => {
     if (err) {
       res.send(err);
     } else {
-      req.flash('success' , `Changes status success!`, false);
+      req.flash('success' , notify.CHANGE_STATUS_SUCCESS, false);
       res.redirect(linksIndex);
     }
   });
@@ -152,7 +155,7 @@ router.get("/delete/:id/:status",(req, res, next) => {
     if (err) {
       res.send(err);
     } else {
-      req.flash('success' , `Delete entries success!`, false);
+      req.flash('success' , notify.DELETE_SUCCESS , false);
       res.redirect(linksIndex);
     }
   });
@@ -177,7 +180,7 @@ router.post("/action",(req, res, next) => {
             }
             else{
               count  = results.modifiedCount;
-              req.flash('success' , `Change status ${count} entries success!`, false);
+              req.flash('success' , util.format(notify.CHANGE_MULTI_STATUS_SUCCESS, count), false);
               res.redirect(linksIndex);
             }
         });
@@ -191,7 +194,7 @@ router.post("/action",(req, res, next) => {
               }
               else{
                 count  = results.modifiedCount;
-                req.flash('success' , `Change status ${count} entries success!`, false);
+                req.flash('success' ,util.format(notify.CHANGE_MULTI_STATUS_SUCCESS, count), false);
                 res.redirect(linksIndex);
               }
           });
@@ -204,7 +207,7 @@ router.post("/action",(req, res, next) => {
               }
               else{
                 count = results.deletedCount;
-                req.flash('success' , `Delete ${count} entries success!`, false);
+                req.flash('success' , util.format(notify.DELETE_MULTI_SUCCESS, count), false);
                 res.redirect(linksIndex);
               }
           });
@@ -217,7 +220,7 @@ router.post("/action",(req, res, next) => {
               });
 
             }); 
-            req.flash('success' , `Change ordering ${count} entries success!`, false);
+            req.flash('success' , util.format(notify.CHANGE_MULTI_ORDERING_SUCCESS, count), false);
             res.redirect(linksIndex);
           }else{
 
@@ -226,7 +229,7 @@ router.post("/action",(req, res, next) => {
               console.log(err);
             }else{
              
-              req.flash('success' , "Change ordering success!", false);
+              req.flash('success' , notify.CHANGE_ORDERING_MULTI_SUCCESS, false);
               res.redirect(linksIndex);
             }
           });   

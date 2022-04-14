@@ -1,3 +1,11 @@
+
+<%  
+      
+const page       =    "items";
+const linkPrefix = `${systemConfig.prefix_admin}/${page}/`;
+
+%> 
+
 <aside class="main-sidebar sidebar-dark-info elevation-4">
     <!-- Brand Logo -->
     <a href="<%= systemConfig.prefix_admin %>/dashboard" class="brand-link">
@@ -29,20 +37,20 @@
              
             
                 <li class="nav-item">
-                    <a href="<%= systemConfig.prefix_admin %>/item" class="nav-link" data-active="category">
+                    <a href="<%= linkPrefix %>" class="nav-link" data-active="category">
                         <i class="nav-icon fas fa-book-open"></i>
                         <p>Items<i class="fas fa-angle-left right"></i></p>
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="<%= systemConfig.prefix_admin %>/item" class="nav-link" data-active="index">
+                            <a href="<%= linkPrefix %>" class="nav-link" data-active="index">
                                 <i class="nav-icon fas fa-list-ul"></i>
                                 <p>List</p>
                             </a>
                         </li>
 
                         <li class="nav-item">
-                            <a href="<%= systemConfig.prefix_admin %>/item/form" class="nav-link" data-active="form">
+                            <a href="<%= linkPrefix %>form" class="nav-link" data-active="form">
                                 <i class="nav-icon fas fa-edit"></i>
                                 <p>Form</p>
                             </a>

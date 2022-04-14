@@ -7,6 +7,8 @@ const flash         = require('express-flash-notification');
 const cookieParser  = require('cookie-parser');
 const session       = require('express-session');
 
+const databaseConfig = require('./config/database');
+
 var app             = express();
 
 app.use(cookieParser());
@@ -28,7 +30,7 @@ app.use(flash(app,{
 var expressLayouts = require('express-ejs-layouts');
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb+srv://namdevelop997:ANHnam997@cluster0.yjegk.mongodb.net/nodejs?retryWrites=false&w=majority');
+mongoose.connect(`mongodb+srv://${databaseConfig.USERNAME}:${databaseConfig.PASSWORD}@cluster0.yjegk.mongodb.net/${databaseConfig.DATABASE}?retryWrites=false&w=majority`);
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {

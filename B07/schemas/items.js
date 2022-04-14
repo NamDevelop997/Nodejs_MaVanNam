@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const databaseConfig = require('./../config/database');
+
 
 const schema = new mongoose.Schema({
   name: String,
@@ -6,4 +8,4 @@ const schema = new mongoose.Schema({
   status: String
 });
 
-module.exports = mongoose.model("items", schema);
+module.exports = mongoose.model(databaseConfig.COLLECTION, schema);

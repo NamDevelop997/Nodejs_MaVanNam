@@ -1,14 +1,21 @@
+  <% include ./../../../helpers/filterStatus %> 
+        <% include ./../../../helpers/status%> 
+        <% include ./../../../helpers/highlight%> 
+        <% include ./../../../helpers/panigations%> 
+<%  
+      
+        const page       =    "items";
+        const linkPrefix = `${systemConfig.prefix_admin}/${page}/`;
 
-
+%> 
 <div class="container-fluid">
 
     <!-- Search & Filter -->
     <div class="card card-info card-outline border-success">
         <div class="card-header">
-            <!-- <h3><%= JSON.stringify(filterStatus) %> </h3> -->
             <h6 class="card-title">Search &amp; Filter</h6>
             <div class="card-tools">
-                <a href="<%= systemConfig.prefix_admin %>/item" class="btn btn-sm btn-outline-danger" ><i class="fa fa-redo"></i></a>
+                <a href="<%= linkPrefix %>" class="btn btn-sm btn-outline-danger" ><i class="fa fa-redo"></i></a>
                 <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip"
                     title="Collapse">
                     <i class="fas fa-minus"></i></button>
@@ -17,19 +24,18 @@
         <div class="card-body ">
             <div class="row justify-content-between">
                 <div class="mb-1">
-                    <% include ./../../../helpers/filterStatus %> 
                     <%- filterStatusHelper(filterStatus, keyword) %>
                  
                 </div>
 
                 <div class="mb-1">
-                    <form action="<%= systemConfig.prefix_admin %>/item/<%= currentStatus %>" method="GET">
+                    <form action="<%= linkPrefix %><%= currentStatus %>" method="GET">
                         <div class="input-group">
                             <input type="text" class="form-control form-control-sm" name="keyword" value="<%= keyword %>" placeholder="Enter the name..."
                                 style="min-width: 300px">
                             <div class="input-group-append">
                                 <button type="submit" class="btn btn-sm btn-info" ><i class="fa fa-search"></i></button>
-                                <a href="<%= systemConfig.prefix_admin %>/item/<%= currentStatus %>" class="btn btn-sm btn-warning" ><i class="fa fa-times"></i></a>
+                                <a href="<%= linkPrefix %><%= currentStatus %>" class="btn btn-sm btn-warning" ><i class="fa fa-times"></i></a>
                             </div>
                         </div>
                     </form>
@@ -52,7 +58,7 @@
         <% if(items.length >= 1){ %> 
             <div class="card-body">
                 <!-- Control -->
-            <form action="<%= systemConfig.prefix_admin %>/item/action" method="POST">
+            <form action="<%= linkPrefix %>action" method="POST">
                 <div class="d-flex flex-wrap align-items-center justify-content-between mb-2">
                     <div class="mb-1">
                         <select id="bulk-action" name="action" class="custom-select custom-select-sm mr-1"
@@ -66,7 +72,7 @@
                                 class="badge badge-pill badge-danger navbar-badge" style="display: none"></span></button>
                     </div>
                     <div class="mb-1">
-                        <a href="<%= systemConfig.prefix_admin %>/item/form" class="btn btn-sm btn-info"><i class="fas fa-plus"></i> Add
+                        <a href="<%= linkPrefix %>form" class="btn btn-sm btn-info"><i class="fas fa-plus"></i> Add
                             New</a>
                     </div>
                 </div>
@@ -99,13 +105,13 @@
                                         <input class="cb-element" type="checkbox" name="cid" id="checkbox-5" value="<%= item._id %>">
                                     </td>
                                     <td class="text-center"><%= index+=1 %> </td>
-                                    <td class="text-center" style="min-width: 180px">
-                                        <% include ./../../../helpers/highlight%> 
+                                    <td class="text-center" style="min-width: 180px"> 
+                                        
                                         <%- highlightHelper(item.name, keyword) %>
                                     </td>
                                     
                                     <td class="text-center">
-                                        <% include ./../../../helpers/status%> 
+                                       
                                         <%- statusHelper(item.status, "item", item.id) %>
                                         
                                     </td> 
@@ -119,11 +125,11 @@
                                     </td>
 
                                     <td class="text-center">
-                                        <a href="<%= systemConfig.prefix_admin %>/item/form/<%= item._id %>" class="rounded-circle btn btn-sm btn-info" title="Edit">
+                                        <a href="<%= linkPrefix %>form/<%= item._id %>" class="rounded-circle btn btn-sm btn-info" title="Edit">
                                             <i class="fas fa-pencil-alt"></i>
                                         </a>
                                         
-                                        <a  href="<%= systemConfig.prefix_admin %>/item/delete/<%= item._id %>/<%= item.status %>" class="rounded-circle btn btn-sm btn-danger" data-toggle="modal" data-target="#modal-delete" title="Delete">
+                                        <a  href="<%= linkPrefix %>delete/<%= item._id %>/<%= item.status %>" class="rounded-circle btn btn-sm btn-danger" data-toggle="modal" data-target="#modal-delete" title="Delete">
                                             <i class="fas fa-trash-alt"></i>
                                         </a>
     
@@ -139,7 +145,7 @@
                                                 </div>
                                                
                                                 <div class="modal-footer border-0">
-                                                    <a href="<%= systemConfig.prefix_admin %>/item/delete/<%= item._id %>/<%= item.status %>" class=" btn btn-sm btn-danger" title="Delete">
+                                                    <a href="<%= linkPrefix %>delete/<%= item._id %>/<%= item.status %>" class=" btn btn-sm btn-danger" title="Delete">
                                                       Confirm    
                                                     </a>
                                                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -163,9 +169,7 @@
 
     <!-- //Panigation -->
     <% if(items.length > 0){%>
-
-        <% include ./../../../helpers/panigations%> 
-        <%- panigationHelper(panigations, "item", currentStatus, keyword) %>
+        <%- panigationHelper(panigations, "items", currentStatus, keyword) %>
     <%} %> 
     <!-- End panigation -->
 </div>
