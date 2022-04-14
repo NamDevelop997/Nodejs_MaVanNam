@@ -20,9 +20,9 @@ const linksIndex    = `/${systemConfig.prefix_admin}/item`;
 //Get Form: Add or Edit
 router.get("/form(/:id)?",  (req, res, next) => {
   
-  let errors = ""; 
-  let getId  = paramsHelpers.getParams(req.params, "id", "");
-  let data   = {
+  let errors  = ""; 
+  let getId   = paramsHelpers.getParams(req.params, "id", "");
+  let data    = {
     _id       : "",
     name      : "",
     ordering  : "",
@@ -47,25 +47,36 @@ router.post("/save", validateItems.validatorItems() ,(req, res, next) => {
       name      : "",
       ordering  : "",
       status    : ""
-    }
-    if (errors.length <= 0) { //not errs
-        let item = {
-        name     : req.body.name,
-        ordering : parseInt(req.body.ordering),
-        status   : req.body.status,
-      }
-      // Save item 
-      
-      new ItemsModel(item).save().then( () => {
-        req.flash('success', "Successfully added new item!", false)
-        res.redirect(linksIndex);
-      }); 
-    }else{ // have err
-      console.log(errors.length);
-        res.render("pages/backend/items/form", { pageTitle  : pageTitleAdd, data, errors} );
-      //  next()
-    }
+    } 
 
+    let item   = Object.assign(req.body);
+    let filter = { name:item.name, status:item.status, ordering: parseInt(item.ordering)};
+    console.log(item.id);
+    if(errors.length <= 0){
+       if(item.id !== '' && typeof item.id !== undefined){
+         //Handler edit
+         ItemsModel.updateOne({_id : item.id }, 
+                              filter, (err, result)=> {if (err) {
+                                          res.send(err);
+                                        } else {
+                                          req.flash('success' , `Update item success!`, false);
+                                          res.redirect(linksIndex);
+                                        }
+         });
+
+      }else{
+        // Handler add 
+        new ItemsModel(filter).save().then( () => {
+          req.flash('success', "Successfully added new item!", false)
+          res.redirect(linksIndex);
+        }); 
+      } 
+       
+    }else{
+      // Hander have errors
+      res.render("pages/backend/items/form", { pageTitle  : pageTitleAdd, data, errors} );
+    }
+     
 });
 
 router.get("/login", (req, res, next) => {
@@ -100,7 +111,7 @@ router.get("(/:status)?", (req, res, next) => {
     ItemsModel.find(ObjWhere)
     .limit(panigations.totalItemsPerpage)
     .skip((panigations.currentPage - 1) * panigations.totalItemsPerpage)
-    .sort({ ordering: "asc" })
+    .sort({ name: 1 })
     .then((items) => {
       res.render("pages/backend/items/list", {
         pageTitle: pageTitleList,

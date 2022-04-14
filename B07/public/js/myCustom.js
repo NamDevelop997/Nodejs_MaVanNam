@@ -49,6 +49,6 @@ $('select[name=action]').change( function (){
 const boxMessage = $('div#message-box');
   setTimeout(function () {
     boxMessage.css("display", "none");
-  }, 4000);
+  }, 6000);
 
 

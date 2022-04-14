@@ -56,10 +56,18 @@ tr.my-read-only {
     font-size: 100%;
 }
 #log_errors{
-    width: 69%;
+    width: 66%;
     padding: 16px 27px 0px 0;
-    margin: 0 auto;
+    margin: 15px auto;
+    
     color: #fff;
-    background: rgb(201 28 124 / 62%);;
+    background: rgb(201 28 124 / 62%);
     border-color: #d32535;
+}
+
+#btn-submit {
+    margin-left: 15%;
+}
+.first {
+    margin-top:1rem;
 }
