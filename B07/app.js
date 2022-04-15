@@ -8,6 +8,8 @@ const cookieParser  = require('cookie-parser');
 const session       = require('express-session');
 
 const databaseConfig = require('./config/database');
+const ItemsModel    = require("./schemas/items");
+
 
 var app             = express();
 
@@ -24,9 +26,9 @@ app.use(flash(app,{
   viewName: 'pages/backend/notification',
 }));
 
+
+
 // app.use(body(),);
-
-
 var expressLayouts = require('express-ejs-layouts');
 const mongoose = require('mongoose');
 
@@ -61,6 +63,14 @@ app.locals.systemConfig = systemConfig;
 
 app.use(`/${systemConfig.prefix_admin}`, require('./routes/backend/index'));
 
+app.get('/', async (req, res)=>{
+  let countItems = 0 ;
+  await ItemsModel.count({}).then((count) => { //get count Items
+  countItems = count;
+});
+
+res.render('pages/backend/dashboard/index', { pageTitle: 'Dashboard' , countItems });
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
