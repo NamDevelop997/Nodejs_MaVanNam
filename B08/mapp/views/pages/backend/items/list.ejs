@@ -2,14 +2,15 @@
         <% include ./../../../helpers/status%> 
         <% include ./../../../helpers/highlight%> 
         <% include ./../../../helpers/panigations%> 
-<%  
+        <% include ./../../../helpers/timesAndName%> 
+  <%  
       
         const page       =    "items";
         const linkPrefix = `${systemConfig.prefix_admin}/${page}/`;
 
 %> 
 <div class="container-fluid">
-
+    <!-- <h3><%= JSON.stringify(items)  %> </h3> -->
     <!-- Search & Filter -->
     <div class="card card-info card-outline border-success">
         <div class="card-header">
@@ -95,6 +96,9 @@
 
                                 <th class="text-center">Ordering</th>
 
+                                <th class="text-center">Created</th>
+                                <th class="text-center">Update at</th>
+
                                 <th class="text-center">Action</th>
                             </tr>
                         </thead>
@@ -123,6 +127,9 @@
                                             class="chkOrdering form-control form-control-sm m-auto text-center ordering"
                                             style="width: 65px" min="1">
                                     </td>
+                                    <%- timesAndNameHelper("created",item.created.time,item.created.user_name) %> 
+                                    <%- timesAndNameHelper("update",item.modified.time,item.modified.user_name) %>
+                                   
 
                                     <td class="text-center">
                                         <a href="<%= linkPrefix %>form/<%= item._id %>" class="rounded-circle btn btn-sm btn-info" title="Edit">

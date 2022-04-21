@@ -8,10 +8,8 @@ const cookieParser  = require('cookie-parser');
 const session       = require('express-session');
 
 //Define path
-global.__base_app         = __dirname + ('/mapp/');
-console.log("link:",__dirname);
-
-global.__path_configs  = __base_app  + 'config/';
+global.__base_app     = __dirname + ('/mapp/');
+global.__path_configs = __base_app  + 'config/';
 global.__path_schemas = __base_app +'schemas/';
 // global.__path_schemas = __base_app +'schemas/';
 

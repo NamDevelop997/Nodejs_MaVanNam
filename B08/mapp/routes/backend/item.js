@@ -3,6 +3,8 @@ var router          = express.Router();
 const util          = require('util');
 
 const {check, body,validationResult}     = require('express-validator');    
+const moment        = require('moment');
+
 
 
 const ItemsModel    = require(__path_schemas + "items");
@@ -53,8 +55,13 @@ router.post("/save", validateItems.validatorItems() ,(req, res, next) => {
     } 
 
     let item   = Object.assign(req.body);
-    let filter = { name:item.name, status:item.status, ordering: parseInt(item.ordering)};
-    console.log(item.id);
+    let filter = { name:item.name, status:item.status, ordering: parseInt(item.ordering),
+      modified : {
+      user_id   : "er32fsdf",
+      user_name : "abcd",
+      time      : Date.now()
+    } };
+    // console.log(item.id);
     if(errors.length <= 0){
        if(item.id !== '' && typeof item.id !== undefined){
          //Handler edit
@@ -69,6 +76,13 @@ router.post("/save", validateItems.validatorItems() ,(req, res, next) => {
 
       }else{
         // Handler add 
+       filter = { name:item.name, status:item.status, ordering: parseInt(item.ordering),
+        created : {
+          user_id   : "dfdfd",
+          user_name : "aaaaaaaa",
+          time      : Date.now()
+         },
+        };
         new ItemsModel(filter).save().then( () => {
           req.flash('success', notify.ADD_SUCCESS, false)
           res.redirect(linksIndex);
@@ -114,6 +128,7 @@ router.get("(/:status)?",async (req, res, next) => {
     
   });
      ItemsModel.find(ObjWhere)
+          .select("name status ordering created modified")
           .limit(panigations.totalItemsPerpage)
           .skip((panigations.currentPage - 1) * panigations.totalItemsPerpage)
           .sort({ name: 1 })
@@ -125,6 +140,7 @@ router.get("(/:status)?",async (req, res, next) => {
               currentStatus,
               keyword,
               panigations,
+              moment
             });
           });
   
@@ -135,8 +151,16 @@ router.get("/change-status/:id/:status",(req, res, next) => {
   let id             = paramsHelpers.getParams(req.params, "id", "");
   let currentStatus  = paramsHelpers.getParams(req.params, "status", "active");
   let changeStatus   = (currentStatus === "active") ? "inactive": "active";
+  let data    = {
+    status: changeStatus,
+    modified : {
+      user_id   : "er32fsdf",
+      user_name : "abcd",
+      time      : Date.now()
+    }
+  }
   
-  ItemsModel.updateOne({ _id: id }, { status: changeStatus  }, (err, result)=> {
+  ItemsModel.updateOne({ _id: id }, data, (err, result)=> {
     if (err) {
       res.send(err);
     } else {
@@ -169,12 +193,20 @@ router.post("/action",(req, res, next) => {
   let getCid        = req.body.cid;
   let getOrdering   = req.body.ordering;
   let count         = 0;        
-   
+  let data          = {
+                      status: getAction,
+                      modified : {
+                      user_id   : "er32fsdf",
+                      user_name : "abcd",
+                      time      : Date.now()
+                    }
+                }
   if(getAction !== "" && getCid!== undefined) {
     switch (getAction) {
       case "active":
+       
           ItemsModel.updateMany({_id:getCid}, 
-            {status:getAction}, function (err, results) {
+            data, function (err, results) {
             if (err){
                 console.log(err)
             }
@@ -188,7 +220,7 @@ router.post("/action",(req, res, next) => {
 
       case "inactive":
             ItemsModel.updateMany({_id : getCid}, 
-              {status : getAction},  (err, results) =>{
+              data,  (err, results) =>{
               if (err){
                   console.log(err);
               }
@@ -213,10 +245,15 @@ router.post("/action",(req, res, next) => {
           });
            break;
       case "ordering":
+        
         if (Array.isArray(getCid)) {
            count = getCid.length;
            getCid.forEach((item, index) => {
-              ItemsModel.updateOne({_id : item},{ordering: parseInt(getOrdering[index]) },(err, results) => {
+              ItemsModel.updateOne({_id : item},{ordering: parseInt(getOrdering[index]),  modified : {
+                user_id   : "er32fsdf",
+                user_name : "abcd",
+                time      : Date.now()
+              } },(err, results) => {
               });
 
             }); 
@@ -224,7 +261,11 @@ router.post("/action",(req, res, next) => {
             res.redirect(linksIndex);
           }else{
 
-          ItemsModel.updateOne({_id : getCid},{ordering: parseInt(getOrdering) },(err, results) => {
+          ItemsModel.updateOne({_id : getCid},{ordering: parseInt(getOrdering), modified : {
+            user_id   : "er32fsdf",
+            user_name : "abcd",
+            time      : Date.now()
+          } },(err, results) => {
             if (err) {
               console.log(err);
             }else{
