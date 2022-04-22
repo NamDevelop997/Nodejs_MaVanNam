@@ -7,13 +7,11 @@ const flash         = require('express-flash-notification');
 const cookieParser  = require('cookie-parser');
 const session       = require('express-session');
 
-//Define path
-global.__base_app     = __dirname + ('/mapp/');
-global.__path_configs = __base_app  + 'config/';
+//Define path global app
+global.__base_app     = __dirname  + ('/mapp/');
+global.__path_configs = __base_app + 'config/';
 global.__path_schemas = __base_app +'schemas/';
-// global.__path_schemas = __base_app +'schemas/';
-
-
+global.__path_helpers = __base_app +'helpers/';
 
 const databaseConfig= require(__path_configs + 'database');
 const systemConfig  = require(__path_configs + 'system');

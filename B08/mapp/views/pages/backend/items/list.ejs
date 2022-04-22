@@ -1,14 +1,17 @@
-  <% include ./../../../helpers/filterStatus %> 
+        <% include ./../../../helpers/filterStatus %> 
         <% include ./../../../helpers/status%> 
         <% include ./../../../helpers/highlight%> 
         <% include ./../../../helpers/panigations%> 
         <% include ./../../../helpers/timesAndName%> 
-  <%  
+        <% include ./../../../helpers/sort%> 
+       
+      
+        
+    <%  
       
         const page       =    "items";
         const linkPrefix = `${systemConfig.prefix_admin}/${page}/`;
-
-%> 
+    %> 
 <div class="container-fluid">
     <!-- <h3><%= JSON.stringify(items)  %> </h3> -->
     <!-- Search & Filter -->
@@ -90,13 +93,17 @@
                                 </th>
                                 <th class="text-center">#</th>
 
-                                <th class="text-center">Name</th>
+                                <%- sortHelper(linkPrefix + 'sort/'+currentStatus+'/name/' + set_type_sort, set_type_sort, field_name,"name","text-danger" ) %> 
+                               
 
-                                <th class="text-center">Status</th>
+                                <th class="text-center">
+                                    Status
+                                </th>
+                               
+                                <%- sortHelper(linkPrefix + 'sort/'+currentStatus+'/ordering/' + set_type_sort, set_type_sort, field_name,"ordering","text-danger" ) %> 
 
-                                <th class="text-center">Ordering</th>
+                                <%- sortHelper(linkPrefix + 'sort/'+currentStatus+'/created/' + set_type_sort, set_type_sort, field_name, "created", "text-danger" ) %> 
 
-                                <th class="text-center">Created</th>
                                 <th class="text-center">Update at</th>
 
                                 <th class="text-center">Action</th>

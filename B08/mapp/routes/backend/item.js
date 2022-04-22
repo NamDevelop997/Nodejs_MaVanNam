@@ -4,15 +4,16 @@ const util          = require('util');
 
 const {check, body,validationResult}     = require('express-validator');    
 const moment        = require('moment');
+const { Session } = require("inspector");
 
 
 
 const ItemsModel    = require(__path_schemas + "items");
 const UtilsHelpers  = require(__base_app     + "helpers/Utils");
 const paramsHelpers = require(__base_app     + "helpers/getParams");
-const systemConfig  = require(__path_configs  +'system');
+const systemConfig  = require(__path_configs +'system');
 const validateItems = require(__base_app     +'validations/item');
-const notify        = require(__path_configs  + 'notify');
+const notify        = require(__path_configs + 'notify');
 
 const pageTitle     = "Item Management - ";
 const pageTitleAdd  = pageTitle + "Add";
@@ -106,6 +107,14 @@ router.get("(/:status)?",async (req, res, next) => {
   let currentStatus   = paramsHelpers.getParams(req.params, "status", "all");
   let keyword         = paramsHelpers.getParams(req.query, "keyword", "");
   let getPageOnURL    = paramsHelpers.getParams(req.query, "page", 1);
+  let field_name      = paramsHelpers.getParams(req.session, "field_name", "name");
+  let get_type_sort   = paramsHelpers.getParams(req.session, "type_sort", "asc");
+  let set_type_sort   = (get_type_sort==="asc") ? get_type_sort = 'desc' : get_type_sort = 'asc'; 
+  // let get_status      = paramsHelpers.getParams(req.session, "status", "all");
+  let sort            = {};
+      sort[field_name]= set_type_sort;
+     
+  
 
   let filterStatus    = UtilsHelpers.filterStatus(currentStatus);
   let panigations     = {
@@ -131,7 +140,7 @@ router.get("(/:status)?",async (req, res, next) => {
           .select("name status ordering created modified")
           .limit(panigations.totalItemsPerpage)
           .skip((panigations.currentPage - 1) * panigations.totalItemsPerpage)
-          .sort({ name: 1 })
+          .sort(sort)
           .then((items) => {
             res.render(`${folderViewBe}list`, {
               pageTitle: pageTitleList,
@@ -140,7 +149,11 @@ router.get("(/:status)?",async (req, res, next) => {
               currentStatus,
               keyword,
               panigations,
-              moment
+              moment,
+              set_type_sort,
+              field_name,
+              
+              
             });
           });
   
@@ -284,4 +297,16 @@ router.post("/action",(req, res, next) => {
   
 });
 
+// Sort
+router.get("/sort(/:status)?/:field_name/:type_sort",(req, res, next) => {
+ req.session.field_name = paramsHelpers.getParams(req.params, "field_name", "name");
+ req.session.type_sort  = paramsHelpers.getParams(req.params, "type_sort", "asc");
+ req.session.status     = paramsHelpers.getParams(req.params, "status", "all");
+//  console.log(req.session);
+ if(req.session.status !== "all"){
+    res.redirect(linksIndex + "/" + req.session.status);
+ }
+ res.redirect(linksIndex);
+ 
+});
 module.exports = router;

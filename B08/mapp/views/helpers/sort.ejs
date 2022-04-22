@@ -1,0 +1,45 @@
+<%  include ./capitalizeFirstLetter %>
+<%   
+   
+    sortHelper = (links, sortType, sortField,name, color) =>{
+      
+      let icon = `<i class="fa fa-sort text-warning"></i>`;
+      let XHTMLSort = ``;
+      
+      if (name === sortField) {
+        switch (sortField){
+          case 'name':
+            if (sortType === "asc") {
+              icon = `<i class="fa fa-sort-alpha-down ${color}"></i>`;
+            }else{
+              icon = `<i class="fa fa-sort-alpha-up ${color}"></i>`;
+            }
+          break;
+
+          case 'ordering':
+            if (sortType === "asc") {
+              icon = `<i class="fa fa-sort-numeric-down ${color}"></i>`;
+            }else{
+              icon = `<i class="fa fa-sort-numeric-up ${color}"></i>`;
+            }
+          break;
+            case 'created':
+            if (sortType === "asc") {
+              icon = `<i class="fa fa-sort-amount-down ${color}"></i>`;
+            }else{
+              icon = `<i class="fa fa-sort-amount-up ${color}"></i>`;
+            } 
+          break;   
+        }
+      }
+      return XHTMLSort = `
+      <th class="text-center">
+         <a href="${links}">${capitalizeFirstLetter(name)}</a>
+           ${icon}
+          </a>
+      </th>
+      `;
+
+    }
+%>
+
