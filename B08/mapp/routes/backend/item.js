@@ -32,7 +32,8 @@ router.get("/form(/:id)?",  (req, res, next) => {
     _id       : "",
     name      : "",
     ordering  : "",
-    status    : ""
+    status    : "",
+    content   : ""
   }
   
   if( getId === "" ){ //form Add
@@ -40,7 +41,7 @@ router.get("/form(/:id)?",  (req, res, next) => {
   }else{
      //form Edit
     ItemsModel.findById({_id : getId}).then((data) =>{
-      res.render(folderViewBe + "form", { data, pageTitle  : pageTitleEdit,errors});
+      res.render(folderViewBe + "form", { data, pageTitle  : pageTitleEdit, errors});
     });
   }
 });
@@ -63,7 +64,7 @@ router.post("/save", validateItems.validatorItems() ,(req, res, next) => {
       user_name : "abcd",
       time      : Date.now()
     } };
-    // console.log(item.id);
+    
     if(errors.length <= 0){
        if(item.id !== '' && typeof item.id !== undefined){
          //Handler edit

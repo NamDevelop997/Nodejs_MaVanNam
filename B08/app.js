@@ -12,6 +12,8 @@ global.__base_app     = __dirname  + ('/mapp/');
 global.__path_configs = __base_app + 'config/';
 global.__path_schemas = __base_app +'schemas/';
 global.__path_helpers = __base_app +'helpers/';
+global.__path_views   = __base_app +'views/';
+global.__path_views_helpers   = __path_views  +'helpers/';
 
 const databaseConfig= require(__path_configs + 'database');
 const systemConfig  = require(__path_configs + 'system');
