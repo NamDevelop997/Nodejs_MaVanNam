@@ -52,11 +52,12 @@ router.post("/save", validateItems.validatorItems() ,(req, res, next) => {
       _id       : "",
       name      : "",
       ordering  : "",
-      status    : ""
+      status    : "",
+      content   : ""
     } 
 
     let item   = Object.assign(req.body);
-    let filter = { name:item.name, status:item.status, ordering: parseInt(item.ordering),
+    let filter = { name:item.name, status:item.status, ordering: parseInt(item.ordering), content:item.content,
       modified : {
       user_id   : "er32fsdf",
       user_name : "abcd",
@@ -77,7 +78,7 @@ router.post("/save", validateItems.validatorItems() ,(req, res, next) => {
 
       }else{
         // Handler add 
-       filter = { name:item.name, status:item.status, ordering: parseInt(item.ordering),
+       filter = { name:item.name, status:item.status, ordering: parseInt(item.ordering), content:item.content,
         created : {
           user_id   : "dfdfd",
           user_name : "aaaaaaaa",

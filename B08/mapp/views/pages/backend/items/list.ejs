@@ -180,10 +180,13 @@
             <div class="card-body alert alert-warning text-center">Sorry!, We couldn't find any results</div>
          <% } %>       
     </div>
+    
 
     <!-- //Panigation -->
     <% if(items.length > 0){%>
         <%- panigationHelper(panigations, "items", currentStatus, keyword) %>
     <%} %> 
     <!-- End panigation -->
+
+
 </div>
