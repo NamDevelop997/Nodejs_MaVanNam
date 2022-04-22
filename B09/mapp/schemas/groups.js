@@ -7,6 +7,7 @@ const schema = new mongoose.Schema({
   ordering: Number,
   status  : String,
   content : String,
+  group_acp : String,
   created : {
     user_id   : String,
     user_name : String,
@@ -20,4 +21,4 @@ const schema = new mongoose.Schema({
 
 });
 
-module.exports = mongoose.model(databaseConfig.COLLECTION_ITEMS, schema);
+module.exports = mongoose.model(databaseConfig.COLLECTION_GROUPS, schema);

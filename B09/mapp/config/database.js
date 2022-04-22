@@ -2,6 +2,7 @@ module.exports  = {
     USERNAME    : "namdevelop997",
     PASSWORD    : "ANHnam997",
     DATABASE    : "nodejs",
-    COLLECTION  : "items"
+    COLLECTION_ITEMS   : "items",
+    COLLECTION_GROUPS  : "groups",
 
 }

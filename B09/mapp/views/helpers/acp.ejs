@@ -1,0 +1,19 @@
+<% acpsHelper = (acp, type, id) => {
+    let icon     = '';
+    let links    =  `${systemConfig.prefix_admin}/${type}/change-acp/${id}/${acp}`;
+
+    switch(acp) {
+        case "true": 
+            icon = `<i class="fa fa-user-check text-success text-md"></i>`;
+            break;
+
+        case "false": 
+            icon = `<i class="fa fa-user-lock text-infor"></i> <b>Lock</b>`;
+            break;
+        default:
+            icon = ''   ;
+            break;
+    }
+        return `<a href="${links}">${icon}</a>`;
+}
+%>
