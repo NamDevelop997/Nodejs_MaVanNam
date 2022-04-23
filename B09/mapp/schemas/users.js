@@ -7,7 +7,10 @@ const schema = new mongoose.Schema({
   ordering    : Number,
   status      : String,
   content     : String,
-  group_acp   : String,
+  group_acp   : {
+    id  : String,
+    name: String,
+  },
   created     : {
     user_id   : String,
     user_name : String,

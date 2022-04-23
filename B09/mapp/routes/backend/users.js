@@ -8,6 +8,7 @@ const { Session }   = require("inspector");
 
 const controllerName= "users"
 const mainModel     = require(__path_schemas + controllerName);
+const GroupsModel   = require(__path_schemas + "groups");
 const UtilsHelpers  = require(__base_app     + "helpers/Utils");
 const capitalizeFirstLetterHelpers  = require(__base_app     + "helpers/capitalizeFirstLetter");
 const paramsHelpers = require(__base_app     + "helpers/getParams");
@@ -24,7 +25,7 @@ const folderViewBe  = `pages/backend/${controllerName}/`;
 const folderViewFe  = "pages/frontend/";
 
 //Get Form: Add or Edit
-router.get("/form(/:id)?",  (req, res, next) => {
+router.get("/form(/:id)?", async (req, res, next) => {
   
   let errors  = ""; 
   let getId   = paramsHelpers.getParams(req.params, "id", "");
@@ -39,13 +40,17 @@ router.get("/form(/:id)?",  (req, res, next) => {
       name: ""
     }
   }
-  
+  let groupsItems = [];
+  await GroupsModel.find({}).select('_id name').then((groups) => {
+    groupsItems = groups;
+  })
+
   if( getId === "" ){ //form Add
-    res.render(folderViewBe + "form", {data,  pageTitle  : pageTitleAdd,  errors});
+    res.render(folderViewBe + "form", {data,  pageTitle  : pageTitleAdd,  errors, groupsItems});
   }else{
      //form Edit
     mainModel.findById({_id : getId}).then((data) =>{
-      res.render(folderViewBe + "form", { data, pageTitle  : pageTitleEdit, errors});
+      res.render(folderViewBe + "form", { data, pageTitle  : pageTitleEdit, errors, groupsItems});
     });
   }
 });
@@ -66,7 +71,6 @@ router.post("/save", validateGroups.validatorUsers() ,(req, res, next) => {
     } 
 
     let user   = Object.assign(req.body);
-    console.log("user", user);
     
     let filter = { fullname:user.name, status:user.status, ordering: parseInt(user.ordering), content:user.content,
       group_acp : user.group_acp,
@@ -125,7 +129,6 @@ router.get("(/:status)?",async (req, res, next) => {
   let field_name      = paramsHelpers.getParams(req.session, "field_name", "name");
   let get_type_sort   = paramsHelpers.getParams(req.session, "type_sort", "asc");
   let set_type_sort   = (get_type_sort==="asc") ? get_type_sort = 'desc' : get_type_sort = 'asc'; 
-  
   let sort            = {};
       sort[field_name]= set_type_sort;
      

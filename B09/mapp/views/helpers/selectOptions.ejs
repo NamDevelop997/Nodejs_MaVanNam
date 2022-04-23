@@ -1,0 +1,25 @@
+
+<% include ./capitalizeFirstLetter %>  
+
+<% 
+
+    selectOptionsHelper = (arrGroups, name) => {
+        let XHTMLGroups = "";
+        arrGroups.forEach(item => {
+            XHTMLGroups += `<option value="${item.name}"> ${item.name} </option>`;
+        });
+
+        return `
+        <div class="form-group row">
+            <label for="form[${name}]" class="col-sm-2 col-form-label text-sm-right">${capitalizeFirstLetter(name)}</label>
+            <div class="col-xs-12 col-sm-8">
+                <select id="form[${name}]" name="${name}" class="custom-select custom-select-sm">
+                    <option value=""> - Select ${name} - </option>
+                   ${XHTMLGroups}
+                </select>
+            </div>
+        </div>
+        `;
+    }
+
+%> 
