@@ -7,7 +7,7 @@
         <% include ./../../../helpers/acp%> 
        
     <%  
-        const page       =    "groups";
+        const page       =    "users";
         const linkPrefix = `${systemConfig.prefix_admin}/manager/${page}/`;
     %> 
 <div class="container-fluid">
@@ -25,7 +25,7 @@
         <div class="card-body ">
             <div class="row justify-content-between">
                 <div class="mb-1">
-                    <%- filterStatusHelper(filterStatusGroups, keyword, linkPrefix) %>
+                    <%- filterStatusHelper(filterStatusUsers, keyword, linkPrefix) %>
                  
                 </div>
 
@@ -49,14 +49,14 @@
 
     <div class="card card-info m-auto">
         <div class="card-header">
-            <h4 class="card-title">List groups</h4>
+            <h4 class="card-title">List users</h4>
             <div class="card-tools">
               
                 <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip"
                     title="Collapse"><i class="fas fa-minus"></i></button>
             </div>
         </div>
-        <% if(groups.length >= 1){ %> 
+        <% if(users.length >= 1){ %> 
             <div class="card-body">
                 <!-- Control -->
             <form action="<%= linkPrefix %>action" method="POST">
@@ -111,47 +111,48 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <% groups.forEach( (group, index) => { %>
+                             
+                            <% users.forEach( (user, index) => { %>
                                 <tr>
                                     <td class="text-center">
-                                        <input class="cb-element" type="checkbox" name="cid" id="checkbox-5" value="<%= group._id %>">
+                                        <input class="cb-element" type="checkbox" name="cid" id="checkbox-5" value="<%= user._id %>">
                                     </td>
                                     <td class="text-center"><%= index+=1 %> </td>
                                     <td class="text-center" style="min-width: 180px"> 
                                         
-                                        <%- highlightHelper(group.name, keyword) %>
+                                        <%- highlightHelper(user.fullname, keyword) %>
                                     </td>
                                     
                                     <td class="text-center">
                                        
-                                        <%- statusHelper(group.status, "manager/groups", group.id) %>
+                                        <%- statusHelper(user.status, "manager/users", user.id) %>
                                         
                                     </td> 
                                     
 
                                     <td class="text-center position-relative">
                                         <input type="number"
-                                            value="<%= group.ordering %>"
+                                            value="<%= user.ordering %>"
                                             class="chkOrdering form-control form-control-sm m-auto text-center ordering"
                                             style="width: 65px" min="1">
                                     </td>
 
                                     <td class="text-center">
                                        
-                                        <%- acpsHelper(group.group_acp, "manager/groups", group.id) %>
+                                        <%- acpsHelper(user.group_acp, "manager/users", user.id) %>
                                         
                                     </td> 
 
-                                    <%- timesAndNameHelper("created",group.created.time, group.created.user_name) %> 
-                                    <%- timesAndNameHelper("update",group.modified.time, group.modified.user_name) %>
+                                    <%- timesAndNameHelper("created",user.created.time, user.created.user_name) %> 
+                                    <%- timesAndNameHelper("update",user.modified.time, user.modified.user_name) %>
                                    
 
                                     <td class="text-center">
-                                        <a href="<%= linkPrefix %>form/<%= group._id %>" class="rounded-circle btn btn-sm btn-info" title="Edit">
+                                        <a href="<%= linkPrefix %>form/<%= user._id %>" class="rounded-circle btn btn-sm btn-info" title="Edit">
                                             <i class="fas fa-pencil-alt"></i>
                                         </a>
                                         
-                                        <a  href="<%= linkPrefix %>delete/<%= group._id %>/<%= group.status %>" class="rounded-circle btn btn-sm btn-danger" data-toggle="modal" data-target="#modal-delete" title="Delete">
+                                        <a  href="<%= linkPrefix %>delete/<%= user._id %>/<%= user.status %>" class="rounded-circle btn btn-sm btn-danger" data-toggle="modal" data-target="#modal-delete" title="Delete">
                                             <i class="fas fa-trash-alt"></i>
                                         </a>
     
@@ -160,14 +161,14 @@
                                             <div class="modal-dialog" role="document">
                                               <div class="modal-content bg-warning border-warning">
                                                 <div class="modal-header border-0">
-                                                  <h5 class="modal-title" id="exampleModalLabel">Are you want delete this group?</h5>
+                                                  <h5 class="modal-title" id="exampleModalLabel">Are you want delete this user?</h5>
                                                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                   </button>
                                                 </div>
                                                
                                                 <div class="modal-footer border-0">
-                                                    <a href="<%= linkPrefix %>delete/<%= group._id %>/<%= group.status %>" class=" btn btn-sm btn-danger" title="Delete">
+                                                    <a href="<%= linkPrefix %>delete/<%= user._id %>/<%= user.status %>" class=" btn btn-sm btn-danger" title="Delete">
                                                       Confirm    
                                                     </a>
                                                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -191,8 +192,8 @@
     
 
     <!-- //Panigation -->
-    <% if(groups.length > 0){%>
-        <%- panigationHelper(panigations, "manager/groups", currentStatus, keyword) %>
+    <% if(users.length > 0){%>
+        <%- panigationHelper(panigations, "manager/users", currentStatus, keyword) %>
     <%} %> 
     <!-- End panigation -->
 

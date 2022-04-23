@@ -4,5 +4,6 @@ module.exports  = {
     DATABASE    : "nodejs",
     COLLECTION_ITEMS   : "items",
     COLLECTION_GROUPS  : "groups",
+    COLLECTION_USERS   : "users",
 
 }

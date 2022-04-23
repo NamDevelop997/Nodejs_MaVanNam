@@ -1,5 +1,6 @@
 <div class="container-fluid">
-    <div class="row justify-content-between">
+    <div class="row justify-content-start">
+        <!-- Items -->
         <div class="col-lg-3 col-6">
             <div class="small-box bg-info">
                 <div class="inner">
@@ -10,6 +11,20 @@
                     <i class="fab fa-gitter"></i>
                 </div>
                 <a href="<%= systemConfig.prefix_admin %>/items" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+
+        <!-- Groups ACP -->
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-success">
+                <div class="inner">
+                     <h3 class="text-warning"><%= countGroups %></h3>
+                        <p class="text-warning">Groups</p>
+                </div>
+                <div class="icon text-warning">
+                    <i class="fa fa-users text-dark"></i>
+                </div>
+                <a href="<%= systemConfig.prefix_admin %>/manager/groups" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
     </div>

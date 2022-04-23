@@ -6,7 +6,7 @@ const {check, body,validationResult}     = require('express-validator');
 const moment        = require('moment');
 const { Session }   = require("inspector");
 
-const controllerName= "groups"
+const controllerName= "users"
 const mainModel     = require(__path_schemas + controllerName);
 const UtilsHelpers  = require(__base_app     + "helpers/Utils");
 const capitalizeFirstLetterHelpers  = require(__base_app     + "helpers/capitalizeFirstLetter");
@@ -30,11 +30,14 @@ router.get("/form(/:id)?",  (req, res, next) => {
   let getId   = paramsHelpers.getParams(req.params, "id", "");
   let data    = {
     _id       : "",
-    name      : "",
+    fullname  : "",
     ordering  : "",
     status    : "",
     content   : "",
-    group_acp : ""
+    group_acp : {
+      id : "",
+      name: ""
+    }
   }
   
   if( getId === "" ){ //form Add
@@ -48,30 +51,35 @@ router.get("/form(/:id)?",  (req, res, next) => {
 });
 
 // Handle data form 
-router.post("/save", validateGroups.validatorGroups() ,(req, res, next) => {
+router.post("/save", validateGroups.validatorUsers() ,(req, res, next) => {
     let errors = validationResult(req).array();
     let data   = {
       _id       : "",
-      name      : "",
-      ordering  : "",
-      status    : "",
-      content   : "",
-      group_acp : ""
+    fullname   : "",
+    ordering  : "",
+    status    : "",
+    content   : "",
+    group_acp : {
+      id : "",
+      name: ""
+    }
     } 
 
-    let group   = Object.assign(req.body);
-    let filter = { name:group.name, status:group.status, ordering: parseInt(group.ordering), content:group.content,
-      group_acp : group.group_acp,
+    let user   = Object.assign(req.body);
+    console.log("user", user);
+    
+    let filter = { fullname:user.name, status:user.status, ordering: parseInt(user.ordering), content:user.content,
+      group_acp : user.group_acp,
       modified  : {
-      user_id   : "er32fsdf",
-      user_name : "Founder",
-      time      : Date.now()
-    } };
+        user_id   : "er32fsdf",
+        user_name : "Founder",
+        time      : Date.now()
+      } };
     
     if(errors.length <= 0){
-       if(group.id !== '' && typeof group.id !== undefined){
+       if(user.id !== '' && typeof user.id !== undefined){
          //Handler edit
-         mainModel.updateOne({_id : group.id }, 
+         mainModel.updateOne({_id : user.id }, 
                               filter, (err, result)=> {if (err) {
                                           res.send(err);
                                         } else {
@@ -82,8 +90,8 @@ router.post("/save", validateGroups.validatorGroups() ,(req, res, next) => {
 
       }else{
         // Handler add 
-       filter = { name:group.name, status:group.status, ordering: parseInt(group.ordering), content:group.content,
-        group_acp : group.group_acp,
+       filter = { fullname:user.name, status:user.status, ordering: parseInt(user.ordering), content:user.content,
+        group_acp : user.group_acp,
         created : {
           user_id   : "dfdfd212",
           user_name : "Founder",
@@ -121,9 +129,8 @@ router.get("(/:status)?",async (req, res, next) => {
   let sort            = {};
       sort[field_name]= set_type_sort;
      
-  
 
-  let filterStatusGroups    = UtilsHelpers.filterStatusGroups(currentStatus);
+  let filterStatusUsers    = UtilsHelpers.filterStatusUsers(currentStatus);
   let panigations     = {
     totalItemsPerpage : 5,
     currentPage       : getPageOnURL,
@@ -132,17 +139,17 @@ router.get("(/:status)?",async (req, res, next) => {
   };
 
   if (currentStatus === "all") {
-    if (keyword !== "") ObjWhere = { name: { $regex: keyword, $options: "i" } };
+    if (keyword !== "") ObjWhere = { fullname: { $regex: keyword, $options: "i" } };
   } else {
     ObjWhere = {
       status: currentStatus,
-      name: { $regex: keyword, $options: "i" },
+      fullname: { $regex: keyword, $options: "i" },
     };
   }
   if (currentStatus === "lock") {
     ObjWhere = {
       group_acp: 'false',
-      name: { $regex: keyword, $options: "i" },
+      fullname: { $regex: keyword, $options: "i" },
     };
   }
    await mainModel.count(ObjWhere).then((data) => {
@@ -150,22 +157,21 @@ router.get("(/:status)?",async (req, res, next) => {
     
   });
      mainModel.find(ObjWhere)
-          .select("name status ordering created modified group_acp")
+          .select("fullname status ordering created modified group_acp")
           .limit(panigations.totalItemsPerpage)
           .skip((panigations.currentPage - 1) * panigations.totalItemsPerpage)
           .sort(sort)
-          .then((groups) => {
+          .then((users) => {
             res.render(`${folderViewBe}list`, {
               pageTitle: pageTitleList,
-              groups,
-              filterStatusGroups,
+              users,
+              filterStatusUsers,
               currentStatus,
               keyword,
               panigations,
               moment,
               set_type_sort,
               field_name,
-              
               
             });
           });
@@ -223,7 +229,7 @@ router.get("/change-acp/:id/:acp",(req, res, next) => {
 
 });
 
-//Delete one groups
+//Delete one users
 router.get("/delete/:id/:status",(req, res, next) => {
   let id             = paramsHelpers.getParams(req.params, "id", "");
 
@@ -238,7 +244,7 @@ router.get("/delete/:id/:status",(req, res, next) => {
 
 });
 
-//  Action multil CRUD and change ordering for groups
+//  Action multil CRUD and change ordering for users
 router.post("/action",(req, res, next) => {
   
   let getAction     = req.body.action;
@@ -300,8 +306,8 @@ router.post("/action",(req, res, next) => {
         
         if (Array.isArray(getCid)) {
            count = getCid.length;
-           getCid.forEach((group, index) => {
-              mainModel.updateOne({_id : group},{ordering: parseInt(getOrdering[index]),  modified : {
+           getCid.forEach((user, index) => {
+              mainModel.updateOne({_id : user},{ordering: parseInt(getOrdering[index]),  modified : {
                 user_id   : "er32fsdf",
                 user_name : "Founder",
                 time      : Date.now()

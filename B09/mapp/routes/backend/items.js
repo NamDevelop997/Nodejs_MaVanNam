@@ -4,23 +4,24 @@ const util          = require('util');
 
 const {check, body,validationResult}     = require('express-validator');    
 const moment        = require('moment');
-const { Session } = require("inspector");
+const { Session }   = require("inspector");
 
+const controllerName= "items";
 
-
-const ItemsModel    = require(__path_schemas + "items");
+const mainModel    = require(__path_schemas + controllerName);
 const UtilsHelpers  = require(__base_app     + "helpers/Utils");
+const capitalizeFirstLetterHelpers  = require(__base_app     + "helpers/capitalizeFirstLetter");
 const paramsHelpers = require(__base_app     + "helpers/getParams");
 const systemConfig  = require(__path_configs +'system');
 const validateItems = require(__base_app     +'validations/item');
 const notify        = require(__path_configs + 'notify');
 
-const pageTitle     = "Item Management - ";
+const pageTitle     = capitalizeFirstLetter(controllerName)+ " Management - ";
 const pageTitleAdd  = pageTitle + "Add";
 const pageTitleEdit = pageTitle + "Edit";
 const pageTitleList = pageTitle + "List";
-const linksIndex    = `/${systemConfig.prefix_admin}/items`;
-const folderViewBe  = "pages/backend/items/";
+const linksIndex    = `/${systemConfig.prefix_admin}//${controllerName}`;
+const folderViewBe  = `pages/backend/${controllerName}/`;
 const folderViewFe  = "pages/frontend/";
 
 //Get Form: Add or Edit
@@ -40,7 +41,7 @@ router.get("/form(/:id)?",  (req, res, next) => {
     res.render(folderViewBe + "form", {data,  pageTitle  : pageTitleAdd,  errors});
   }else{
      //form Edit
-    ItemsModel.findById({_id : getId}).then((data) =>{
+    mainModel.findById({_id : getId}).then((data) =>{
       res.render(folderViewBe + "form", { data, pageTitle  : pageTitleEdit, errors});
     });
   }
@@ -69,7 +70,7 @@ router.post("/save", validateItems.validatorItems() ,(req, res, next) => {
     if(errors.length <= 0){
        if(item.id !== '' && typeof item.id !== undefined){
          //Handler edit
-         ItemsModel.updateOne({_id : item.id }, 
+         mainModel.updateOne({_id : item.id }, 
                               filter, (err, result)=> {if (err) {
                                           res.send(err);
                                         } else {
@@ -87,7 +88,7 @@ router.post("/save", validateItems.validatorItems() ,(req, res, next) => {
           time      : Date.now()
          },
         };
-        new ItemsModel(filter).save().then( () => {
+        new mainModel(filter).save().then( () => {
           req.flash('success', notify.ADD_SUCCESS, false)
           res.redirect(linksIndex);
         }); 
@@ -135,11 +136,11 @@ router.get("(/:status)?",async (req, res, next) => {
       name: { $regex: keyword, $options: "i" },
     };
   }
-   await ItemsModel.count(ObjWhere).then((data) => {
+   await mainModel.count(ObjWhere).then((data) => {
          panigations.totalItems = data;
     
   });
-     ItemsModel.find(ObjWhere)
+     mainModel.find(ObjWhere)
           .select("name status ordering created modified")
           .limit(panigations.totalItemsPerpage)
           .skip((panigations.currentPage - 1) * panigations.totalItemsPerpage)
@@ -176,7 +177,7 @@ router.get("/change-status/:id/:status",(req, res, next) => {
     }
   }
   
-  ItemsModel.updateOne({ _id: id }, data, (err, result)=> {
+  mainModel.updateOne({ _id: id }, data, (err, result)=> {
     if (err) {
       res.send(err);
     } else {
@@ -191,7 +192,7 @@ router.get("/change-status/:id/:status",(req, res, next) => {
 router.get("/delete/:id/:status",(req, res, next) => {
   let id             = paramsHelpers.getParams(req.params, "id", "");
 
-  ItemsModel.findOneAndRemove({ _id: id }, (err, result)=> {
+  mainModel.findOneAndRemove({ _id: id }, (err, result)=> {
     if (err) {
       res.send(err);
     } else {
@@ -221,7 +222,7 @@ router.post("/action",(req, res, next) => {
     switch (getAction) {
       case "active":
        
-          ItemsModel.updateMany({_id:getCid}, 
+          mainModel.updateMany({_id:getCid}, 
             data, function (err, results) {
             if (err){
                 console.log(err)
@@ -235,7 +236,7 @@ router.post("/action",(req, res, next) => {
           break;
 
       case "inactive":
-            ItemsModel.updateMany({_id : getCid}, 
+            mainModel.updateMany({_id : getCid}, 
               data,  (err, results) =>{
               if (err){
                   console.log(err);
@@ -249,7 +250,7 @@ router.post("/action",(req, res, next) => {
          break;
         
       case "delete":
-            ItemsModel.deleteMany({_id : getCid},(err, results) => {
+            mainModel.deleteMany({_id : getCid},(err, results) => {
               if (err){
                   console.log(err);
               }
@@ -265,7 +266,7 @@ router.post("/action",(req, res, next) => {
         if (Array.isArray(getCid)) {
            count = getCid.length;
            getCid.forEach((item, index) => {
-              ItemsModel.updateOne({_id : item},{ordering: parseInt(getOrdering[index]),  modified : {
+              mainModel.updateOne({_id : item},{ordering: parseInt(getOrdering[index]),  modified : {
                 user_id   : "er32fsdf",
                 user_name : "abcd",
                 time      : Date.now()
@@ -277,7 +278,7 @@ router.post("/action",(req, res, next) => {
             res.redirect(linksIndex);
           }else{
 
-          ItemsModel.updateOne({_id : getCid},{ordering: parseInt(getOrdering), modified : {
+          mainModel.updateOne({_id : getCid},{ordering: parseInt(getOrdering), modified : {
             user_id   : "er32fsdf",
             user_name : "abcd",
             time      : Date.now()

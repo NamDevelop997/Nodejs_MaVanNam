@@ -1,5 +1,5 @@
 <%  
-        const page       =    "groups";
+        const page       =    "users";
         const linkPrefix = `${systemConfig.prefix_admin}/manager/${page}/`;
         
 %> 
@@ -24,7 +24,7 @@
                 <div class="form-group row <%= (data.id !== undefined) ? '': 'first mt-3' %>">
                     <label for="form[name]" class="col-sm-2 col-form-label text-sm-right ">Name</label>
                     <div class="col-xs-12 col-sm-8">
-                        <input type="text" id="form[name]" name="name" value="<%= data.name %>" class="form-control form-control-sm">
+                        <input type="text" id="form[name]" name="name" value="<%= data.fullname %>" class="form-control form-control-sm">
                     </div>
                 </div>
                 
