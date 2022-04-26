@@ -107,6 +107,7 @@ router.get("/login", (req, res, next) => {
 
 //filter by status
 router.get("(/:status)?",async (req, res, next) => {
+ 
   let ObjWhere        = {};
   let currentStatus   = paramsHelpers.getParams(req.params, "status", "all");
   let keyword         = paramsHelpers.getParams(req.query, "keyword", "");
@@ -118,8 +119,6 @@ router.get("(/:status)?",async (req, res, next) => {
   let sort            = {};
       sort[field_name]= set_type_sort;
      
-  
-
   let filterStatusItems    = UtilsHelpers.filterStatusItems(currentStatus);
   let panigations     = {
     totalItemsPerpage : 5,
@@ -306,7 +305,7 @@ router.get("/sort(/:status)?/:field_name/:type_sort",(req, res, next) => {
  req.session.field_name = paramsHelpers.getParams(req.params, "field_name", "name");
  req.session.type_sort  = paramsHelpers.getParams(req.params, "type_sort", "asc");
  req.session.status     = paramsHelpers.getParams(req.params, "status", "all");
-//  console.log(req.session);
+
  if(req.session.status !== "all"){
     res.redirect(linksIndex + "/" + req.session.status);
  }

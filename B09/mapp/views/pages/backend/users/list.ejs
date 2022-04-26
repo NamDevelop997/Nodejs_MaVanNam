@@ -5,6 +5,7 @@
         <% include ./../../../helpers/timesAndName%> 
         <% include ./../../../helpers/sort%> 
         <% include ./../../../helpers/acp%> 
+        <% include ./../../../helpers/selectGroupName%> 
        
     <%  
         const page       =    "users";
@@ -56,7 +57,7 @@
                     title="Collapse"><i class="fas fa-minus"></i></button>
             </div>
         </div>
-        <% if(users.length >= 1){ %> 
+        <% if(data.length >= 1){ %> 
             <div class="card-body">
                 <!-- Control -->
             <form action="<%= linkPrefix %>action" method="POST">
@@ -100,7 +101,7 @@
                                 <%- sortHelper(linkPrefix + 'sort/'+currentStatus+'/ordering/' + set_type_sort, set_type_sort, field_name,"ordering","text-danger" ) %>
 
                                 <th class="text-center">
-                                    Group-ACP
+                                    Group
                                 </th>
 
                                 <%- sortHelper(linkPrefix + 'sort/'+currentStatus+'/created/' + set_type_sort, set_type_sort, field_name, "created", "text-danger" ) %> 
@@ -111,8 +112,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                             
-                            <% users.forEach( (user, index) => { %>
+                            
+                            <% data.forEach( (user, index) => { %> 
+                            
                                 <tr>
                                     <td class="text-center">
                                         <input class="cb-element" type="checkbox" name="cid" id="checkbox-5" value="<%= user._id %>">
@@ -120,7 +122,7 @@
                                     <td class="text-center"><%= index+=1 %> </td>
                                     <td class="text-center" style="min-width: 180px"> 
                                         
-                                        <%- highlightHelper(user.fullname, keyword) %>
+                                        <%- highlightHelper(user.name, keyword) %>
                                     </td>
                                     
                                     <td class="text-center">
@@ -138,9 +140,8 @@
                                     </td>
 
                                     <td class="text-center">
-                                       
-                                        <%- acpsHelper(user.group_acp.name, "manager/users", user.id) %>
-                                        
+
+                                        <%= selectGroupname(groupsItems, user.group.id) %> 
                                     </td> 
 
                                     <%- timesAndNameHelper("created",user.created.time, user.created.user_name) %> 
@@ -192,7 +193,7 @@
     
 
     <!-- //Panigation -->
-    <% if(users.length > 0){%>
+    <% if(data.length > 0){%>
         <%- panigationHelper(panigations, "manager/users", currentStatus, keyword) %>
     <%} %> 
     <!-- End panigation -->

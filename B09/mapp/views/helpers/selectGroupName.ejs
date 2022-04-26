@@ -1,0 +1,15 @@
+<% 
+    selectGroupname = (arrGroup, idUserGroup) => {
+        
+        let groupName = "";
+        arrGroup.forEach ((item)=>{
+            if (item.id === idUserGroup) {
+                groupName = item.name; 
+            }
+        });
+       return groupName;
+    }
+
+
+
+%> 

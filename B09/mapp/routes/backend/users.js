@@ -6,14 +6,14 @@ const {check, body,validationResult}     = require('express-validator');
 const moment        = require('moment');
 const { Session }   = require("inspector");
 
-const controllerName= "users"
+const controllerName= "users";
 const mainModel     = require(__path_schemas + controllerName);
 const GroupsModel   = require(__path_schemas + "groups");
 const UtilsHelpers  = require(__base_app     + "helpers/Utils");
 const capitalizeFirstLetterHelpers  = require(__base_app     + "helpers/capitalizeFirstLetter");
 const paramsHelpers = require(__base_app     + "helpers/getParams");
 const systemConfig  = require(__path_configs + 'system');
-const validateGroups = require(__base_app    + `validations/${controllerName}`);
+const validateUsers = require(__base_app    + `validations/${controllerName}`);
 const notify        = require(__path_configs + 'notify');
 
 const pageTitle     = capitalizeFirstLetter(controllerName)+" Management - ";
@@ -31,20 +31,20 @@ router.get("/form(/:id)?", async (req, res, next) => {
   let getId   = paramsHelpers.getParams(req.params, "id", "");
   let data    = {
     _id       : "",
-    fullname  : "",
+    name      : "",
     ordering  : "",
     status    : "",
     content   : "",
-    group_acp : {
+    group : {
       id : "",
       name: ""
     }
   }
   let groupsItems = [];
-  await GroupsModel.find({}).select('_id name').then((groups) => {
+  await GroupsModel.find({}).select('id name').then((groups) => {
     groupsItems = groups;
   })
-
+ 
   if( getId === "" ){ //form Add
     res.render(folderViewBe + "form", {data,  pageTitle  : pageTitleAdd,  errors, groupsItems});
   }else{
@@ -56,7 +56,7 @@ router.get("/form(/:id)?", async (req, res, next) => {
 });
 
 // Handle data form 
-router.post("/save", validateGroups.validatorUsers() ,(req, res, next) => {
+router.post("/save", validateUsers.validatorUsers() , async (req, res, next) => {
     let errors = validationResult(req).array();
     let data   = {
       _id       : "",
@@ -64,25 +64,33 @@ router.post("/save", validateGroups.validatorUsers() ,(req, res, next) => {
     ordering  : "",
     status    : "",
     content   : "",
-    group_acp : {
+    group : {
       id : "",
       name: ""
     }
-    } 
-
+  };
+  
     let user   = Object.assign(req.body);
-    
-    let filter = { fullname:user.name, status:user.status, ordering: parseInt(user.ordering), content:user.content,
-      group_acp : user.group_acp,
+   
+    let filter = { name:user.name, status:user.status, ordering: parseInt(user.ordering), content:user.content,
+      group : {id: user.groups, name: ''},
       modified  : {
         user_id   : "er32fsdf",
         user_name : "Founder",
         time      : Date.now()
       } };
-    
+     
+
+      let groupsItems = [];
+      await GroupsModel.find({}).select('id name').then((groups) => {
+        groupsItems = groups;
+       
+      });
+       
+  
     if(errors.length <= 0){
-       if(user.id !== '' && typeof user.id !== undefined){
-         //Handler edit
+       if(user.id !== '' && typeof user.id !== undefined){ //Handler edit
+        
          mainModel.updateOne({_id : user.id }, 
                               filter, (err, result)=> {if (err) {
                                           res.send(err);
@@ -92,10 +100,13 @@ router.post("/save", validateGroups.validatorUsers() ,(req, res, next) => {
                                         }
          });
 
-      }else{
-        // Handler add 
-       filter = { fullname:user.name, status:user.status, ordering: parseInt(user.ordering), content:user.content,
-        group_acp : user.group_acp,
+      }else{ // Handler add 
+       
+       filter = { name:user.name, status:user.status, ordering: parseInt(user.ordering), content:user.content,
+        group : {
+          id: user.groups,
+         
+        },
         created : {
           user_id   : "dfdfd212",
           user_name : "Founder",
@@ -110,7 +121,7 @@ router.post("/save", validateGroups.validatorUsers() ,(req, res, next) => {
        
     }else{
       // Hander have errors
-      res.render(`${folderViewBe}form`, { pageTitle  : pageTitleAdd, data, errors} );
+      res.render(`${folderViewBe}form`, { pageTitle  : pageTitleAdd, data, errors, groupsItems} );
     }
      
 });
@@ -131,9 +142,8 @@ router.get("(/:status)?",async (req, res, next) => {
   let set_type_sort   = (get_type_sort==="asc") ? get_type_sort = 'desc' : get_type_sort = 'asc'; 
   let sort            = {};
       sort[field_name]= set_type_sort;
-     
-
-  let filterStatusUsers    = UtilsHelpers.filterStatusUsers(currentStatus);
+    
+  let filterStatusUsers = UtilsHelpers.filterStatusUsers(currentStatus);
   let panigations     = {
     totalItemsPerpage : 5,
     currentPage       : getPageOnURL,
@@ -149,25 +159,26 @@ router.get("(/:status)?",async (req, res, next) => {
       fullname: { $regex: keyword, $options: "i" },
     };
   }
-  if (currentStatus === "lock") {
-    ObjWhere = {
-      group_acp: 'false',
-      fullname: { $regex: keyword, $options: "i" },
-    };
-  }
-   await mainModel.count(ObjWhere).then((data) => {
+  
+  let groupsItems = [];
+  await GroupsModel.find({}).select('id name').then((groups) => {
+    groupsItems = groups;
+  });
+  
+  await mainModel.count(ObjWhere).then((data) => {
          panigations.totalItems = data;
     
   });
-     mainModel.find(ObjWhere)
-          .select("fullname status ordering created modified group_acp")
+  
+  mainModel.find(ObjWhere)
+          .select("name status ordering created modified group")
           .limit(panigations.totalItemsPerpage)
           .skip((panigations.currentPage - 1) * panigations.totalItemsPerpage)
           .sort(sort)
-          .then((users) => {
+          .then((data) => {
             res.render(`${folderViewBe}list`, {
               pageTitle: pageTitleList,
-              users,
+              data,
               filterStatusUsers,
               currentStatus,
               keyword,
@@ -175,6 +186,7 @@ router.get("(/:status)?",async (req, res, next) => {
               moment,
               set_type_sort,
               field_name,
+              groupsItems
               
             });
           });
@@ -206,31 +218,6 @@ router.get("/change-status/:id/:status",(req, res, next) => {
 
 });
 
-// Change group ACP
-router.get("/change-acp/:id/:acp",(req, res, next) => {
-  let id          = paramsHelpers.getParams(req.params, "id", "");
-  let currentACP  = paramsHelpers.getParams(req.params, "acp", "true");
-  
-  let changeACP   = (currentACP === "true") ? "false": "true";
-  let data        = {
-    group_acp     : changeACP,
-    modified      : {
-      user_id     : "admin-acp232323",
-      user_name   : "Founder",
-      time        : Date.now()
-    }
-  }
-  
-  mainModel.updateOne({ _id: id }, data, (err, result)=> {
-    if (err) {
-      res.send(err);
-    } else {
-      req.flash('success' , notify.CHANGE_STATUS_SUCCESS, false);
-      res.redirect(linksIndex);
-    }
-  });
-
-});
 
 //Delete one users
 router.get("/delete/:id/:status",(req, res, next) => {
@@ -347,14 +334,14 @@ router.post("/action",(req, res, next) => {
 
 // Sort
 router.get("/sort(/:status)?/:field_name/:type_sort",(req, res, next) => {
- req.session.field_name = paramsHelpers.getParams(req.params, "field_name", "name");
- req.session.type_sort  = paramsHelpers.getParams(req.params, "type_sort", "asc");
- req.session.status     = paramsHelpers.getParams(req.params, "status", "all");
-//  console.log(req.session);
- if(req.session.status !== "all"){
-    res.redirect(linksIndex + "/" + req.session.status);
- }
- res.redirect(linksIndex);
+  req.session.field_name = paramsHelpers.getParams(req.params, "field_name", "name");
+  req.session.type_sort  = paramsHelpers.getParams(req.params, "type_sort", "asc");
+  req.session.status     = paramsHelpers.getParams(req.params, "status", "all");
  
-});
+  if(req.session.status !== "all"){
+     res.redirect(linksIndex + "/" + req.session.status);
+  }
+  res.redirect(linksIndex);
+  
+ });
 module.exports = router;

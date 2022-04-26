@@ -8,7 +8,7 @@ let validationFormUsers = () => {
         check('status',"please select status!").notEmpty(),
         check('ordering', 'At least 1').isNumeric({min: 1}),
         check('content', 'Content is required!').notEmpty(),
-        check('group_acp', 'Choice group-ACP!').notEmpty(),
+        check('groups', 'Select group!').notEmpty(),
     ];
 }
 module.exports = {

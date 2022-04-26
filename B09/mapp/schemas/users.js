@@ -3,11 +3,11 @@ const databaseConfig = require(__path_configs +'database');
 
 
 const schema = new mongoose.Schema({
-  fullname    : String,
+  name    : String,
   ordering    : Number,
   status      : String,
   content     : String,
-  group_acp   : {
+  group   : {
     id  : String,
     name: String,
   },

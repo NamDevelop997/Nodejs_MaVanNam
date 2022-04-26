@@ -40,10 +40,6 @@ $('select[name=action]').change( function (){
   });
 // End check option button apply
 
-// const btn = $('#bulk-apply');
-
-// hideBox = 
-
 
 // hide flash message 
 const boxMessage = $('div#message-box');

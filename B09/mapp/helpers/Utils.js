@@ -149,13 +149,6 @@ filterStatusUsers = (currentStatus) => {
       class: "btn-outline-warning",
     },
 
-    {
-      name: "Lock",
-      value: "lock",
-      count: 12,
-      link: "#",
-      class: "btn-outline-secondary",
-    },
   ];
 
   let conditions = {};
