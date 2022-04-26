@@ -33,12 +33,20 @@ $('input[name=all]').click(function(){
 // Check option button apply
 $('select[name=action]').change( function (){
     if($('select[name=action]').val()==''){
-        $('#bulk-apply').addClass('disabled')
+        $('#bulk-apply').prop('disabled', true)
     }else{
-        $('#bulk-apply').removeClass('disabled')
+        $('#bulk-apply').removeAttr('disabled')
     }
   });
-// End check option button apply
+
+// Check option button filter group
+$('select[name=group_name]').change( function (){
+    if($('select[name=group_name]').val()==''){
+        $('#bulk-filter').prop('disabled',true)
+    }else{
+        $('#bulk-filter').removeAttr('disabled')
+    }
+  });
 
 
 // hide flash message 

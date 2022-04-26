@@ -5,6 +5,7 @@ const util          = require('util');
 const {check, body,validationResult}     = require('express-validator');    
 const moment        = require('moment');
 const { Session }   = require("inspector");
+const { group } = require("console");
 
 const controllerName= "users";
 const mainModel     = require(__path_schemas + controllerName);
@@ -60,7 +61,7 @@ router.post("/save", validateUsers.validatorUsers() , async (req, res, next) => 
     let errors = validationResult(req).array();
     let data   = {
       _id       : "",
-    fullname   : "",
+    name   : "",
     ordering  : "",
     status    : "",
     content   : "",
@@ -71,22 +72,27 @@ router.post("/save", validateUsers.validatorUsers() , async (req, res, next) => 
   };
   
     let user   = Object.assign(req.body);
+    let nameGroup = "";
    
+    let groupsItems = [];
+    await GroupsModel.find({}).select('id name').then((groups) => {
+      groupsItems = groups;
+      groupsItems.forEach((item,i)=>{
+        if(item.id === user.groups){
+           nameGroup = item.name;
+        }
+      });
+    });
+    
+
     let filter = { name:user.name, status:user.status, ordering: parseInt(user.ordering), content:user.content,
-      group : {id: user.groups, name: ''},
+      group : {id: user.groups, name: nameGroup},
       modified  : {
         user_id   : "er32fsdf",
         user_name : "Founder",
         time      : Date.now()
       } };
      
-
-      let groupsItems = [];
-      await GroupsModel.find({}).select('id name').then((groups) => {
-        groupsItems = groups;
-       
-      });
-       
   
     if(errors.length <= 0){
        if(user.id !== '' && typeof user.id !== undefined){ //Handler edit
@@ -105,7 +111,7 @@ router.post("/save", validateUsers.validatorUsers() , async (req, res, next) => 
        filter = { name:user.name, status:user.status, ordering: parseInt(user.ordering), content:user.content,
         group : {
           id: user.groups,
-         
+          
         },
         created : {
           user_id   : "dfdfd212",
@@ -130,7 +136,7 @@ router.get("/login", (req, res, next) => {
   res.render(`${folderViewFe}login`, { pageTitle: "Login", layout: false });
 });
 
-//filter by status
+//filter by status and page list users
 router.get("(/:status)?",async (req, res, next) => {
   
   let ObjWhere        = {};
@@ -139,25 +145,35 @@ router.get("(/:status)?",async (req, res, next) => {
   let getPageOnURL    = paramsHelpers.getParams(req.query, "page", 1);
   let field_name      = paramsHelpers.getParams(req.session, "field_name", "name");
   let get_type_sort   = paramsHelpers.getParams(req.session, "type_sort", "asc");
+  let get_group_name  = paramsHelpers.getParams(req.session, "group_name", "novalue");
+  
+  console.log(currentStatus);
+  
   let set_type_sort   = (get_type_sort==="asc") ? get_type_sort = 'desc' : get_type_sort = 'asc'; 
   let sort            = {};
       sort[field_name]= set_type_sort;
     
   let filterStatusUsers = UtilsHelpers.filterStatusUsers(currentStatus);
   let panigations     = {
-    totalItemsPerpage : 5,
+    totalItemsPerpage : 10,
     currentPage       : getPageOnURL,
     totalItems        : 1,
     pageRanges        : 3
   };
 
+ 
+
   if (currentStatus === "all") {
-    if (keyword !== "") ObjWhere = { fullname: { $regex: keyword, $options: "i" } };
+    if (keyword !== "") ObjWhere = { name: { $regex: keyword, $options: "i" } };
+   
   } else {
     ObjWhere = {
       status: currentStatus,
-      fullname: { $regex: keyword, $options: "i" },
+      name: { $regex: keyword, $options: "i" },
     };
+  }
+   if(get_group_name !== "novalue" && get_group_name !==undefined){
+    ObjWhere = {'group.name': get_group_name,}
   }
   
   let groupsItems = [];
@@ -329,6 +345,13 @@ router.post("/action",(req, res, next) => {
         break;
     }
   }
+  
+});
+
+// Filter groups for module users
+router.post("/group-filter", (req, res, next)=>{
+  req.session.group_name = req.body.group_name;
+  res.redirect(linksIndex);
   
 });
 
