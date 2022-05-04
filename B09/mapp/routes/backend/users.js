@@ -147,8 +147,6 @@ router.get("(/:status)?",async (req, res, next) => {
   let get_type_sort   = paramsHelpers.getParams(req.session, "type_sort", "asc");
   let get_group_name  = paramsHelpers.getParams(req.session, "group_name", "novalue");
   
-  console.log(currentStatus);
-  
   let set_type_sort   = (get_type_sort==="asc") ? get_type_sort = 'desc' : get_type_sort = 'asc'; 
   let sort            = {};
       sort[field_name]= set_type_sort;

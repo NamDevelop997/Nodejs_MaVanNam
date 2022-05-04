@@ -1,0 +1,92 @@
+
+<%  
+      
+const pageItems              =    "items";
+const pageManager            =    "manager";
+const linkPrefixItems        = `${systemConfig.prefix_admin}/${pageItems}/`;
+const linkPrefixManager      = `${systemConfig.prefix_admin}/${pageManager}/`;
+
+%> 
+
+<aside class="main-sidebar sidebar-dark-info elevation-4">
+    <!-- Brand Logo -->
+    <a href="<%= systemConfig.prefix_admin %>/dashboard" class="brand-link">
+        <img src="images/logo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+        <span class="brand-text font-weight-light">Nodejs-Nam</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <!-- Sidebar user panel (optional) -->
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="image">
+                <img src="images/default-user.jpg" class="img-circle elevation-2" alt="User Image">
+            </div>
+            <div class="info">
+                <a href="<%= systemConfig.prefix_admin %>/dashboard" class="d-block"><%= systemConfig.full_name %></a>
+            </div>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                <li class="nav-item" style="margin-left: -7px;">
+                    <a href="<%= systemConfig.prefix_admin %>/dashboard" class="nav-link" data-active="dashboard">
+                        <i class="nav-icon fas fa-tachometer-alt" ></i>
+                        &nbsp;<p>Dashboard</p>
+                    </a>
+                </li>
+             
+                <!-- Items -->
+                <li class="nav-item">
+                    <a href="<%= linkPrefixItems %>" class="nav-link" data-active="category">
+                        <i class="fab fa-buromobelexperte" style="font-size: 16px"></i>
+                            &nbsp; <p>Items</p> <i class="fas fa-angle-left right"></i>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="<%= linkPrefixItems %>" class="nav-link ml-2" data-active="index" >
+                                <i class="nav-icon fas fa-list-ul" style="font-size: 12px"></i>
+                                <p>List</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="<%= linkPrefixItems %>form" class="nav-link ml-2" data-active="form">
+                                <i class="nav-icon fas fa-edit" style="font-size: 12px"></i>
+                                <p>Form</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Users Management -->
+                <li class="nav-item">
+                    <a href="<%= linkPrefixManager %>" class="nav-link" data-active="category">
+                        
+                        <i class="fa fa-users" style="font-size: 12px"></i>
+                            &nbsp; <p>Manager</p> <i class="fas fa-angle-left right"></i>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="<%= linkPrefixManager %>groups" class="nav-link ml-2" data-active="index" >
+                                
+                                <i class="fa fa-layer-group" style="font-size: 12px"></i>
+                                &nbsp;<p>Groups</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="<%= linkPrefixManager %>users" class="nav-link ml-2" data-active="form">
+                                <i class="fa fa-user-tie" style="font-size: 12px"></i>
+                                &nbsp;<p>Users</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+</aside>
