@@ -1,5 +1,7 @@
 
 const ItemsData     = require(__path_schemas + "items");
+const notify        = require(__path_configs + 'notify');
+
 
 module.exports = {
 
@@ -15,7 +17,7 @@ module.exports = {
           return ItemsData.count(params);
     },
 
-    changeStatus: ( cid, currentStatus, option = null) => {
+    changeStatus: async ( cid, currentStatus, option = null) => {
         let changeStatus   = (currentStatus === "active") ? "inactive": "active";
         let data    = {
             modified  : {
@@ -23,10 +25,17 @@ module.exports = {
             user_name : "admin",
             time      : Date.now()
             }
-        }
+        };
+
         if(option.task == "update_one_status"){
+            let result = {cid, changeStatus,
+                 notify: {
+                    'title': notify.CHANGE_STATUS_SUCCESS,
+                    className: "success"
+            }};
             data.status    = changeStatus;
-            return ItemsData.updateOne({ _id: cid }, data);  
+            await ItemsData.updateOne({ _id: cid }, data);  
+            return result;
         } 
         if(option.task == "update_many_status") {
             data.status    = currentStatus;

@@ -1,19 +1,19 @@
 <% statusHelper = (status, type, id) => {
-    let classBtn = '';
+    let icon = '';
     let links    =  `${systemConfig.prefix_admin}/${type}/change-status/${id}/${status}`;
 
     switch(status) {
         case "active": 
-            classBtn = 'success';
+            icon = '<i class="fa fa-check-circle text-success fs-3"></i>';
             break;
 
         case "inactive": 
-            classBtn = 'warning';
+            icon = '<i class="fa fa-minus-circle text-danger fs-3"></i>';
             break;
         default:
-            classBtn = 'infor'   ;
+           
             break;
     }
-        return `<a href="${links}"><p class="bg-${classBtn} rounded" style="display: inline;padding: 4px 11px;">${status}</p></a>`;
+        return `<a href="javascript:changeStatus('${links}')" id= "status" class = "status-${id} position-relative">${icon}</a>`;
 }
 %>

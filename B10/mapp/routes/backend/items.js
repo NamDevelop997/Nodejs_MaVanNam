@@ -155,9 +155,8 @@ router.get("/change-status/:id/:status",(req, res, next) => {
   let id             = paramsHelpers.getParams(req.params, "id", "");
   let currentStatus  = paramsHelpers.getParams(req.params, "status", "active");
 
-  ItemsModel.changeStatus(id,currentStatus, option = {task: "update_one_status"}).then((results) => {
-        req.flash('success' , notify.CHANGE_STATUS_SUCCESS, false);
-        res.redirect(linksIndex);
+  ItemsModel.changeStatus(id,currentStatus, {task: "update_one_status"}).then((result) => {
+        res.send({'result': result, 'linksIndex': linksIndex});
     
   });
 });

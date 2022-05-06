@@ -71,3 +71,6 @@ tr.my-read-only {
 .first {
     margin-top:1rem;
 }
+a#status {
+    font-size: 25px;
+}

@@ -16,9 +16,13 @@ global.__path_helpers = __base_app +'helpers/';
 global.__path_views   = __base_app +'views/';
 global.__path_views_helpers   = __path_views  +'helpers/';
 
+const notify       = require(__base_app + 'public/js/notifyjs/notify.min');
+
+
 const databaseConfig= require(__path_configs + 'database');
 const systemConfig  = require(__path_configs + 'system');
 const ItemsModel    = require(__path_schemas+ "items");
+
 
 
 var app             = express();
