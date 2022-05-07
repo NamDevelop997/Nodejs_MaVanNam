@@ -131,8 +131,7 @@ router.get("(/:status)?",async (req, res, next) => {
       name: { $regex: params.keyword, $options: "i" },
     };
   }
-  console.log(params.currentStatus);
-  
+
   if (params.currentStatus === "lock") {
     params.ObjWhere = {
       group_acp: 'false',
@@ -178,7 +177,16 @@ router.get("/change-acp/:id/:acp",(req, res, next) => {
 });
 
 
-
+//Update ordering Ajax 
+router.post('/change-ordering-ajax', (req, res, next)=>{
+  let cid = req.body.id;
+  let getOrdering = req.body.ordering;
+  
+  GroupsModel.changeOrderingAjax(cid, getOrdering).then((result)=>{
+  
+    res.send({"message": notify.UPDATE_ORDERING_SUCCESS, "className": "success"});
+  });
+});
 
 //Delete one groups
 router.get("/delete/:id/:status",(req, res, next) => {

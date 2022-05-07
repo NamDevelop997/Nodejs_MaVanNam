@@ -1,10 +1,11 @@
+//Change Status Ajax
 changeStatus = (links) => {
     let url = links;
     $.ajax({
         type: "GET",
         url: url,
         dataType: "json",
-        success: function (res) {
+        success:  (res) => {
         
             let status = res.result.changeStatus;
             let linkIndex = res.linksIndex;
@@ -27,13 +28,14 @@ changeStatus = (links) => {
     
 }
 
+//Change groups Ajax
 changeGroup = (links) => {
     let url = links;
     $.ajax({
         type: "GET",
         url: url,
         dataType: "json",
-        success: function (res) {
+        success:  (res) => {
         
             let group = res.result.changeGroup;
             let linkIndex = res.linksIndex;
@@ -56,5 +58,30 @@ changeGroup = (links) => {
     
 }
 
+//Change ordering Ajax
+$('input.ordering').change(function () {
+    // event.preventDefault();
+    
+    let  url = $(this).data('link');
+    let  id = $(this).data('id');
+    let  ordering = $(this).val();
+    let  current = $(this);
 
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: {"id": id, "ordering": ordering},
+        dataType: "json",
+        success: function (res) {
+            console.log(res);
+            
+            current.notify(
+                res.message, 
+                { position: "top center", className: res.className }
+              );
+            
+            
+        }
+    });
+});
  

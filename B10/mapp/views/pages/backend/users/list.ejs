@@ -158,8 +158,8 @@
                                             <td class="text-center position-relative">
                                                 <input type="number"
                                                     value="<%= user.ordering %>"
-                                                    class="chkOrdering form-control form-control-sm m-auto text-center ordering"
-                                                    style="width: 65px" min="1">
+                                                    class=" bg-warning chkOrdering form-control form-control-sm m-auto text-center ordering"
+                                                    style="width: 65px" min="1" data-link = <%= linkPrefix + 'change-ordering-ajax' %> data-id= <%= user.id %>>
                                             </td>
 
                                             <td class="text-center">

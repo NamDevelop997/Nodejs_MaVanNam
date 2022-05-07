@@ -200,6 +200,16 @@ router.get("/change-status/:id/:status",(req, res, next) => {
 
 });
 
+//Update ordering Ajax 
+router.post('/change-ordering-ajax', (req, res, next)=>{
+  let cid = req.body.id;
+  let getOrdering = req.body.ordering;
+  
+  UsersModel.changeOrderingAjax(cid, getOrdering).then((result)=>{
+  
+    res.send({"message": notify.UPDATE_ORDERING_SUCCESS, "className": "success"});
+  });
+});
 
 //Delete one users
 router.get("/delete/:id/:status",(req, res, next) => {
