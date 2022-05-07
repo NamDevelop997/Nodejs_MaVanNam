@@ -1,0 +1,8 @@
+<% acpsHelper = (acp = "false", type, id) => {
+    let links    =  `${systemConfig.prefix_admin}/${type}/change-acp/${id}/${acp}`;
+    let colorBtn = (acp == "true") ?"success": "danger";
+    let icon = (acp == "true")? "check": "lock";
+        
+    return `<a href="javascript:changeGroup('${links}')" class = "group-${id} group position-relative"><i class="fa fa-user-${icon} text-${colorBtn}"></i></a>`;
+}
+%>
