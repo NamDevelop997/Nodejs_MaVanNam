@@ -70,7 +70,7 @@ router.post("/save", validateItems.validatorItems() ,(req, res, next) => {
     if(errors.length <= 0){
        if(item.id !== '' && typeof item.id !== undefined){
          //Handler edit
-         ItemsModel.update(item.id, filter).then((results)=>{
+         ItemsModel.update(item.id, filter).then((result)=>{
               req.flash('success' , notify.UPDATE_SUCCESS, false);
               res.redirect(linksIndex);
          });
@@ -173,15 +173,14 @@ router.post('/change-ordering-ajax', (req, res, next)=>{
 });
 
 //Delete one item
-router.get("/delete/:id/:status",(req, res, next) => {
-  let id             = paramsHelpers.getParams(req.params, "id", "");
-
-   ItemsModel.delete(id).then((results) => {
-    req.flash('success' , notify.DELETE_SUCCESS , false);
-    res.redirect(linksIndex);
-  });
-
+router.get("/destroy/:id/:status",(req, res, next) => {
+    let id             = paramsHelpers.getParams(req.params, "id", "");
+    ItemsModel.delete(id).then((results) => {
+      res.send({"message": notify.DELETE_SUCCESS, "className": "success", id});
+    });
 });
+
+
 
 //  Action multil CRUD and change ordering for items
 router.post("/action", async(req, res, next) => {

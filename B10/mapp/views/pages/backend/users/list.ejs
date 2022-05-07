@@ -138,7 +138,7 @@
                                     
                                     <% data.forEach( (user, index) => { %> 
                                     
-                                        <tr>
+                                        <tr id="tr-<%= user.id %>">
                                             <td class="text-center">
                                                 <input class="cb-element" type="checkbox" name="cid" id="checkbox-5" value="<%= user._id %>">
                                             </td>
@@ -163,8 +163,12 @@
                                             </td>
 
                                             <td class="text-center">
-
-                                                <%= selectGroupname(groupsItems, user.group.id) %> 
+                                                <select class="custom-select bg-secondary position-relative" name="selectGroup" data-id=<%= user.id %> data-link = <%= linkPrefix + 'change-group-ajax/'%>>
+                                                    <% groupsItems.forEach(item => { %>
+                                                        <option class="text-left bg-secondary" <%= (user.group.id == item.id) ? "selected": "" %>  value="<%= item.id %>"> <%= item.name %> </option>
+                                                    <% }); %>
+                                                   
+                                                  </select>
                                             </td> 
 
                                             <%- timesAndNameHelper("created",user.created.time, user.created.user_name) %> 
@@ -172,34 +176,15 @@
                                         
 
                                             <td class="text-center">
-                                                <a href="<%= linkPrefix %>form/<%= user._id %>" class="rounded-circle btn btn-sm btn-info" title="Edit">
+                                                <a href="<%= linkPrefix %>form/<%= user._id %>" class="rounded-circle btn btn-sm btn-info"  " title="Edit">
                                                     <i class="fas fa-pencil-alt"></i>
                                                 </a>
                                                 
-                                                <a  href="<%= linkPrefix %>delete/<%= user._id %>/<%= user.status %>" class="rounded-circle btn btn-sm btn-danger" data-toggle="modal" data-target="#modal-delete" title="Delete">
+                                                <a  href="javascript:deleteAjax('<%= linkPrefix %>destroy/<%=user. _id %>/<%=user.status%>')" data-id = "<%= user.id %>" class = "btn btn-sm btn-danger" title="Delete" >
                                                     <i class="fas fa-trash-alt"></i>
                                                 </a>
             
-                                                <!-- Modal -->
-                                                <div class="modal fade" id="modal-delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                    <div class="modal-dialog" role="document">
-                                                    <div class="modal-content bg-warning border-warning">
-                                                        <div class="modal-header border-0">
-                                                        <h5 class="modal-title" id="exampleModalLabel">Are you want delete this user?</h5>
-                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                        </div>
-                                                    
-                                                        <div class="modal-footer border-0">
-                                                            <a href="<%= linkPrefix %>delete/<%= user._id %>/<%= user.status %>" class=" btn btn-sm btn-danger" title="Delete">
-                                                            Confirm    
-                                                            </a>
-                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                        </div>
-                                                    </div>
-                                                    </div>
-                                                </div>
+                                                
                                             </td>
                                         </tr>   
                                     <% }) %>

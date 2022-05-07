@@ -47,8 +47,8 @@ module.exports = {
     changeOrdering: async (cid, getOrdering, option = null) => {
         let  count = 0;
         data = {
-            ordering: parseInt(getOrdering), 
-            modified : {
+            ordering  : parseInt(getOrdering), 
+            modified  : {
             user_id   : "er32fsdf",
             user_name : "abcd",
             time      : Date.now()
@@ -70,8 +70,8 @@ module.exports = {
 
     changeOrderingAjax: (cid, getOrdering) => {
         data = {
-            ordering : parseInt(getOrdering), 
-            modified : {
+            ordering  : parseInt(getOrdering), 
+            modified  : {
             user_id   : "er32fsdf",
             user_name : "abcd",
             time      : Date.now()

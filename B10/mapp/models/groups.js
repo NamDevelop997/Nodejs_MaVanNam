@@ -67,8 +67,8 @@ module.exports = {
     }, 
     changeOrderingAjax: (cid, getOrdering) => {
         data = {
-            ordering : parseInt(getOrdering), 
-            modified : {
+            ordering  : parseInt(getOrdering), 
+            modified  : {
             user_id   : "er32fsdf",
             user_name : "abcd",
             time      : Date.now()

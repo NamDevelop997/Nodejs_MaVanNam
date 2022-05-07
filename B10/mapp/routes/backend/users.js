@@ -211,13 +211,24 @@ router.post('/change-ordering-ajax', (req, res, next)=>{
   });
 });
 
-//Delete one users
-router.get("/delete/:id/:status",(req, res, next) => {
-  let id             = paramsHelpers.getParams(req.params, "id", "");
+router.post('/change-group-ajax', (req, res, next)=>{
+  let idUser = req.body.id;
+  
+  let getIDGroup = req.body.groupID;
+  let getGroupName = req.body.groupName;
+  console.log(getGroupName);
+  
+  UsersModel.changeGroupAjax(idUser, getIDGroup).then((result)=>{
+  
+    res.send({"message": notify.CHANGE_GROUPS_SUCCESS, "className": "success"});
+  });
+});
 
+//Delete one users
+router.get("/destroy/:id/:status",(req, res, next) => {
+  let id             = paramsHelpers.getParams(req.params, "id", "");
   UsersModel.delete(id).then((results) => {
-    req.flash('success' , notify.DELETE_SUCCESS , false);
-    res.redirect(linksIndex);
+    res.send({"message": notify.DELETE_SUCCESS, "className": "success", id});
   });
 });
 

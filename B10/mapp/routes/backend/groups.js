@@ -189,15 +189,11 @@ router.post('/change-ordering-ajax', (req, res, next)=>{
 });
 
 //Delete one groups
-router.get("/delete/:id/:status",(req, res, next) => {
+router.get("/destroy/:id/:status",(req, res, next) => {
   let id             = paramsHelpers.getParams(req.params, "id", "");
-
   GroupsModel.delete(id).then((results) => {
-    req.flash('success' , notify.DELETE_SUCCESS , false);
-    res.redirect(linksIndex);
+    res.send({"message": notify.DELETE_SUCCESS, "className": "success", id});
   });
-
-
 });
 
 //  Action multil CRUD and change ordering for groups

@@ -71,6 +71,6 @@ tr.my-read-only {
 .first {
     margin-top:1rem;
 }
-a#status {
+a#status, a.group {
     font-size: 25px;
 }
