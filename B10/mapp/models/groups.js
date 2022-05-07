@@ -1,6 +1,6 @@
 
 const GroupsData     = require(__path_schemas + "groups");
-const notify        = require(__path_configs + 'notify');
+const notify         = require(__path_configs + 'notify');
 
 
 module.exports = {
@@ -13,8 +13,8 @@ module.exports = {
         .sort(params.sort)
     },
 
-    countItems: (params, option = null)=>{
-          return GroupsData.count(params);
+    countItems: async(params, option = null)=>{
+          return await  GroupsData.count(params);
     },
 
     changeStatus: async (cid, currentStatus, option = null) => {
@@ -66,7 +66,7 @@ module.exports = {
         
     }, 
 
-    changeGroups: ( cid, currentGroup, option = null) => {
+    changeGroups: async (cid, currentGroup, option = null) => {
         let changeGroup   = (currentGroup === "true") ? "false": "true";
         let data    = {
             modified  : {
@@ -75,8 +75,14 @@ module.exports = {
             time      : Date.now()
             }
         }
-            data.group_acp    = changeGroup;
-            return GroupsData.updateOne({_id: cid }, data);  
+        let result = {cid, changeGroup,
+            notify: {
+                'title': notify.CHANGE_GROUPS_SUCCESS,
+                className: "success"
+           }};
+           data.group_acp    = changeGroup;
+           await GroupsData.updateOne({ _id: cid }, data);  
+           return result;
     },
     delete: (cid) => {
            if (Array.isArray(cid)) {

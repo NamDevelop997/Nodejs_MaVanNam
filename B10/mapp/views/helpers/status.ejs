@@ -1,19 +1,7 @@
 <% statusHelper = (status, type, id) => {
-    let icon = '';
     let links    =  `${systemConfig.prefix_admin}/${type}/change-status/${id}/${status}`;
-
-    switch(status) {
-        case "active": 
-            icon = '<i class="fa fa-check-circle text-success fs-3"></i>';
-            break;
-
-        case "inactive": 
-            icon = '<i class="fa fa-minus-circle text-danger fs-3"></i>';
-            break;
-        default:
-           
-            break;
-    }
-        return `<a href="javascript:changeStatus('${links}')" id= "status" class = "status-${id} position-relative">${icon}</a>`;
+    let colorBtn = (status == "active") ?"success": "danger";
+    let icon     = (status == "active") ?"check": "minus";
+        return `<a href="javascript:changeStatus('${links}')" id= "status" class = "status-${id} position-relative"><i class="fa fa-${icon}-circle text-${colorBtn}"></i></a>`;
 }
 %>

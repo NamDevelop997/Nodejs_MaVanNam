@@ -131,8 +131,10 @@ router.get("(/:status)?",async (req, res, next) => {
       name: { $regex: params.keyword, $options: "i" },
     };
   }
+  console.log(params.currentStatus);
+  
   if (params.currentStatus === "lock") {
-    ObjWhere = {
+    params.ObjWhere = {
       group_acp: 'false',
       name: { $regex: params.keyword, $options: "i" },
     };
@@ -148,7 +150,6 @@ router.get("(/:status)?",async (req, res, next) => {
               groups,
               params,
               moment,
-             
             });
           });
   
@@ -171,11 +172,12 @@ router.get("/change-acp/:id/:acp",(req, res, next) => {
   let id          = paramsHelpers.getParams(req.params, "id", "");
   let currentACP  = paramsHelpers.getParams(req.params, "acp", "false");
   
-  GroupsModel.changeGroups(id, currentACP).then((results) => {
-    req.flash('success' , notify.CHANGE_GROUPS_SUCCESS, false);
-    res.redirect(linksIndex);
+  GroupsModel.changeGroups(id, currentACP).then((result) => {
+    res.send({'result': result, 'linksIndex': linksIndex});
   });
 });
+
+
 
 
 //Delete one groups
@@ -242,14 +244,14 @@ router.post("/action",(req, res, next) => {
 
 // Sort
 router.get("/sort(/:status)?/:field_name/:type_sort",(req, res, next) => {
- req.session.field_name = paramsHelpers.getParams(req.params, "field_name", "name");
- req.session.type_sort  = paramsHelpers.getParams(req.params, "type_sort", "asc");
- req.session.status     = paramsHelpers.getParams(req.params, "status", "all");
-//  console.log(req.session);
- if(req.session.status !== "all"){
+  req.session.field_name = paramsHelpers.getParams(req.params, "field_name", "name");
+  req.session.type_sort  = paramsHelpers.getParams(req.params, "type_sort", "asc");
+  req.session.status     = paramsHelpers.getParams(req.params, "status", "all");
+  if(req.session.status !== "all"){
     res.redirect(linksIndex + "/" + req.session.status);
- }
- res.redirect(linksIndex);
- 
-});
+  }
+  console.log(req.session);
+  res.redirect(linksIndex);
+  
+ });
 module.exports = router;

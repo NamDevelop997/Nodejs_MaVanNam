@@ -61,6 +61,7 @@ module.exports = {
             }
             return Promise.resolve((count));
            }else{
+               
              return ItemsData.updateOne({_id : cid}, data);
            }
         
