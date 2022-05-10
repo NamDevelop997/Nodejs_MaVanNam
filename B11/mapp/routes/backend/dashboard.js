@@ -1,7 +1,7 @@
 var express         = require('express');
 var router          = express.Router();
 
-const ItemsModel    = require("../../schemas/items");
+const ItemsModel    = require("../../schemas/category");
 const GroupsModel   = require("../../schemas/groups");
 const UsersModel   = require("../../schemas/users");
 

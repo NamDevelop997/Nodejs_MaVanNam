@@ -6,15 +6,16 @@ const {check, body,validationResult}     = require('express-validator');
 const moment        = require('moment');
 const { Session }   = require("inspector");
 
-const controllerName= "items";
+const controllerName= "category";
 
 const UtilsHelpers  = require(__base_app     + "helpers/Utils");
 const capitalizeFirstLetterHelpers  = require(__base_app     + "helpers/capitalizeFirstLetter");
-const paramsHelpers = require(__base_app     + "helpers/getParams");
-const systemConfig  = require(__path_configs +'system');
-const validateItems = require(__base_app     +'validations/item');
-const notify        = require(__path_configs + 'notify');
-const ItemsModel    = require(__path_models  + 'items');
+const paramsHelpers    = require(__base_app     + "helpers/getParams");
+const systemConfig     = require(__path_configs +'system');
+const validateCategory = require(__base_app  +'validations/category');
+const notify           = require(__path_configs + 'notify');
+const CategoryModel    = require(__path_models  + 'category');
+const slug             = require('slug');
 
 const pageTitle     = capitalizeFirstLetter(controllerName)+ " Management - ";
 const pageTitleAdd  = pageTitle + "Add";
@@ -23,6 +24,7 @@ const pageTitleList = pageTitle + "List";
 const linksIndex    = `/${systemConfig.prefix_admin}/${controllerName}`;
 const folderViewBe  = `pages/backend/${controllerName}/`;
 const folderViewFe  = "pages/frontend/";
+
 
 //Get Form: Add or Edit
 router.get("/form(/:id)?",  (req, res, next) => {
@@ -34,21 +36,22 @@ router.get("/form(/:id)?",  (req, res, next) => {
     name      : "",
     ordering  : "",
     status    : "",
-    content   : ""
+    content   : "",
+    slug      : ""
   }
   
   if( getId === "" ){ //form Add
     res.render(folderViewBe + "form", {data,  pageTitle  : pageTitleAdd,  errors});
   }else{
      //form Edit
-      ItemsModel.findById(getId).then((data) =>{
+      CategoryModel.findById(getId).then((data) =>{
       res.render(folderViewBe + "form", { data, pageTitle  : pageTitleEdit, errors});
     });
   }
 });
 
 // Handle data form 
-router.post("/save", validateItems.validatorItems() ,(req, res, next) => {
+router.post("/save", validateCategory.validatorCategory() ,(req, res, next) => {
     let errors = validationResult(req).array();
     
     let data   = {
@@ -56,35 +59,36 @@ router.post("/save", validateItems.validatorItems() ,(req, res, next) => {
       name      : "",
       ordering  : "",
       status    : "",
-      content   : ""
+      content   : "",
+      slug      : ""
     } 
 
-    let item   = Object.assign(req.body);
-    let filter = { name:item.name, status:item.status, ordering: parseInt(item.ordering), content:item.content,
+    let category   = Object.assign(req.body);
+    let filter = { name:category.name, slug: slug(category.slug), status:category.status, ordering: parseInt(category.ordering), content:category.content,
       modified : {
       user_id   : "er32fsdf",
-      user_name : "abcd",
+      user_name : "Admin",
       time      : Date.now()
     } };
     
     if(errors.length <= 0){
-       if(item.id !== '' && typeof item.id !== undefined){
+       if(category.id !== '' && typeof category.id !== undefined){
          //Handler edit
-         ItemsModel.update(item.id, filter).then((result)=>{
+         CategoryModel.update(category.id, filter).then((result)=>{
               req.flash('success' , notify.UPDATE_SUCCESS, false);
               res.redirect(linksIndex);
          });
 
       }else{
         // Handler add 
-       filter = { name:item.name, status:item.status, ordering: parseInt(item.ordering), content:item.content,
+       filter = { name:category.name, slug: slug(category.slug), status:category.status, ordering: parseInt(category.ordering), content:category.content,
         created : {
           user_id   : "dfdfd",
           user_name : "user1",
           time      : Date.now()
          },
         };
-        ItemsModel.add(filter).then( () => {
+        CategoryModel.add(filter).then( () => {
           req.flash('success', notify.ADD_SUCCESS, false)
           res.redirect(linksIndex);
         }); 
@@ -111,7 +115,7 @@ router.get("(/:status)?",async (req, res, next) => {
   params.getPageOnURL    = paramsHelpers.getParams(req.query, "page", 1);
   params.field_name      = paramsHelpers.getParams(req.session, "field_name", "name");
   params.get_type_sort   = paramsHelpers.getParams(req.session, "type_sort", "asc");
-  params.filterStatusItems  = UtilsHelpers.filterStatusItems(params.currentStatus);
+  params.filterStatusCategory  = UtilsHelpers.filterStatusCategory(params.currentStatus);
   params.set_type_sort   = (params.get_type_sort==="asc") ? params.set_type_sort = 'desc' : params.set_type_sort = 'asc'; 
   params.sort            = {};
   params.sort[params.field_name] = params.set_type_sort;
@@ -133,12 +137,12 @@ router.get("(/:status)?",async (req, res, next) => {
     };
   }
 
-   await ItemsModel.countItems(params.ObjWhere).then((data) => {
+   await CategoryModel.countCategory(params.ObjWhere).then((data) => {
          params.panigations.totalItems = data;
     
   });
   
-  ItemsModel.listItems(params)
+  CategoryModel.listCategory(params)
           .then((items) => {
             res.render(`${folderViewBe}list`, {
               pageTitle: pageTitleList,
@@ -155,7 +159,7 @@ router.get("/change-status/:id/:status",(req, res, next) => {
   let id             = paramsHelpers.getParams(req.params, "id", "");
   let currentStatus  = paramsHelpers.getParams(req.params, "status", "active");
 
-  ItemsModel.changeStatus(id,currentStatus, {task: "update_one_status"}).then((result) => {
+  CategoryModel.changeStatus(id,currentStatus, {task: "update_one_status"}).then((result) => {
         res.send({'result': result, 'linksIndex': linksIndex});
     
   });
@@ -166,7 +170,7 @@ router.post('/change-ordering-ajax', (req, res, next)=>{
     let cid = req.body.id;
     let getOrdering = req.body.ordering;
     
-    ItemsModel.changeOrderingAjax(cid, getOrdering).then((result)=>{
+    CategoryModel.changeOrderingAjax(cid, getOrdering).then((result)=>{
     
       res.send({"message": notify.UPDATE_ORDERING_SUCCESS, "className": "success"});
     });
@@ -175,7 +179,7 @@ router.post('/change-ordering-ajax', (req, res, next)=>{
 //Delete one item
 router.get("/destroy/:id/:status",(req, res, next) => {
     let id             = paramsHelpers.getParams(req.params, "id", "");
-    ItemsModel.delete(id).then((results) => {
+    CategoryModel.delete(id).then((results) => {
       res.send({"message": notify.DELETE_SUCCESS, "className": "success", id});
     });
 });
@@ -194,7 +198,7 @@ router.post("/action", async(req, res, next) => {
     switch (getAction) {
       case "active":
        
-        ItemsModel.changeStatus(getCid, getAction, option = {task : "update_many_status"}).then((result) => {
+        CategoryModel.changeStatus(getCid, getAction, option = {task : "update_many_status"}).then((result) => {
           count  = result.matchedCount;
                 req.flash('success' ,util.format(notify.CHANGE_MULTI_STATUS_SUCCESS, count), false);
                 res.redirect(linksIndex);
@@ -203,8 +207,7 @@ router.post("/action", async(req, res, next) => {
       
 
       case "inactive":
-         ItemsModel.changeStatus(getCid, getAction, option = {task : "update_many_status"}).then((result) => {
-          console.log(result );
+         CategoryModel.changeStatus(getCid, getAction, option = {task : "update_many_status"}).then((result) => {
           count  = result.matchedCount;
                 req.flash('success' ,util.format(notify.CHANGE_MULTI_STATUS_SUCCESS, count), false);
                 res.redirect(linksIndex);
@@ -212,7 +215,7 @@ router.post("/action", async(req, res, next) => {
          break;
         
       case "delete":
-          ItemsModel.delete(getCid).then((results) => {
+          CategoryModel.delete(getCid).then((results) => {
           count += results.deletedCount;
           
           req.flash('success' , util.format(notify.DELETE_MULTI_SUCCESS, count), false);
@@ -220,7 +223,7 @@ router.post("/action", async(req, res, next) => {
           });
            break;
       case "ordering":
-          ItemsModel.changeOrdering(getCid, getOrdering).then((results)=>{
+          CategoryModel.changeOrdering(getCid, getOrdering).then((results)=>{
             req.flash('success' , util.format(notify.CHANGE_MULTI_ORDERING_SUCCESS, results), false);
             res.redirect(linksIndex);
         });

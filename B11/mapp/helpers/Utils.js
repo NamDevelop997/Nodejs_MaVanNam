@@ -1,9 +1,9 @@
-const ItemsModel = require("../schemas/items");
+const ItemsModel = require("../schemas/category");
 const GroupsModel= require("../schemas/groups");
 const UsersModel = require("../schemas/users");
 
 
-filterStatusItems = (currentStatus) => {
+filterStatusCategory = (currentStatus) => {
   let filterStatus = [
     {
       name: "All",
@@ -186,7 +186,7 @@ filterStatusUsers = (currentStatus) => {
 };
 
 module.exports = {
-  filterStatusItems,
+  filterStatusCategory,
   filterStatusGroups,
   filterStatusUsers
 };

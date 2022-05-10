@@ -21,7 +21,7 @@ const notify       = require(__base_app + 'public/js/notifyjs/notify.min');
 
 const databaseConfig= require(__path_configs + 'database');
 const systemConfig  = require(__path_configs + 'system');
-const ItemsModel    = require(__path_schemas+ "items");
+const CategoryModel    = require(__path_schemas+ "category");
 
 
 
@@ -72,12 +72,12 @@ app.locals.systemConfig = systemConfig;
 app.use(`/${systemConfig.prefix_admin}`, require(__base_app +'routes/backend/index'));
 
 app.get('/', async (req, res)=>{
-  let countItems = 0 ;
-  await ItemsModel.count({}).then((count) => { //get count Items
+  let countCategory = 0 ;
+  await CategoryModel.count({}).then((count) => { //get count Items
   countItems = count;
 });
 
-res.render('pages/backend/dashboard/index', { pageTitle: 'Dashboard' , countItems });
+res.render('pages/backend/dashboard/index', { pageTitle: 'Dashboard' , countCategory });
 });
 
 // catch 404 and forward to error handler

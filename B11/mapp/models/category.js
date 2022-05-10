@@ -1,20 +1,20 @@
 
-const ItemsData     = require(__path_schemas + "items");
+const CategoryData     = require(__path_schemas + "category");
 const notify        = require(__path_configs + 'notify');
 
 
 module.exports = {
 
-    listItems: (params, option = null) => {
-        return ItemsData.find(params.ObjWhere)
-        .select("name status ordering created modified")
+    listCategory: (params, option = null) => {
+        return CategoryData.find(params.ObjWhere)
+        .select("name status ordering created modified slug")
         .limit(params.panigations.totalItemsPerpage)
         .skip((params.panigations.currentPage - 1) * params.panigations.totalItemsPerpage)
         .sort(params.sort)
     },
 
-    countItems: (params, option = null)=>{
-          return ItemsData.count(params);
+    countCategory: (params, option = null)=>{
+          return CategoryData.count(params);
     },
 
     changeStatus: async ( cid, currentStatus, option = null) => {
@@ -34,12 +34,12 @@ module.exports = {
                     className: "success"
             }};
             data.status    = changeStatus;
-            await ItemsData.updateOne({ _id: cid }, data);  
+            await CategoryData.updateOne({ _id: cid }, data);  
             return result;
         } 
         if(option.task == "update_many_status") {
             data.status    = currentStatus;
-            return ItemsData.updateMany({_id : cid}, data);
+            return CategoryData.updateMany({_id : cid}, data);
         };
         
     },
@@ -57,12 +57,12 @@ module.exports = {
             for (let index = 0 ; index < cid.length; index++ ){
               count +=1;
                data.ordering = parseInt(getOrdering[index])
-               await ItemsData.updateOne({_id : cid[index]}, data);
+               await CategoryData.updateOne({_id : cid[index]}, data);
             }
             return Promise.resolve((count));
            }else{
                
-             return ItemsData.updateOne({_id : cid}, data);
+             return CategoryData.updateOne({_id : cid}, data);
            }
         
         
@@ -76,28 +76,28 @@ module.exports = {
             user_name : "abcd",
             time      : Date.now()
           }};
-            return ItemsData.updateOne({_id : cid}, data); 
+            return CategoryData.updateOne({_id : cid}, data); 
            
     },  
     
     delete: (cid) => {
            if (Array.isArray(cid)) {
-                return ItemsData.deleteMany({_id : cid});
+                return CategoryData.deleteMany({_id : cid});
            }else{
-                return ItemsData.findOneAndRemove({ _id: cid });
+                return CategoryData.findOneAndRemove({ _id: cid });
            }
         
     },
     add: (filter) => {
-        return new ItemsData(filter).save();
+        return new CategoryData(filter).save();
     },
 
     update: (cid, filter) => {
-        return ItemsData.updateOne({_id : cid }, filter);
+        return CategoryData.updateOne({_id : cid }, filter);
     },
 
     findById: (cid) =>{
-        return  ItemsData.findById({_id : cid});
+        return  CategoryData.findById({_id : cid});
     }
     
 }

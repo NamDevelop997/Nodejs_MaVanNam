@@ -1,9 +1,9 @@
 
 <%  
       
-const pageItems              =    "items";
+const pageCategory              =    "category";
 const pageManager            =    "manager";
-const linkPrefixItems        = `${systemConfig.prefix_admin}/${pageItems}/`;
+const linkPrefixCategory        = `${systemConfig.prefix_admin}/${pageCategory}/`;
 const linkPrefixManager      = `${systemConfig.prefix_admin}/${pageManager}/`;
 
 %> 
@@ -39,24 +39,18 @@ const linkPrefixManager      = `${systemConfig.prefix_admin}/${pageManager}/`;
              
                 <!-- Items -->
                 <li class="nav-item">
-                    <a href="<%= linkPrefixItems %>" class="nav-link" data-active="category">
+                    <a href="<%= linkPrefixCategory %>" class="nav-link" data-active="category">
                         <i class="fab fa-buromobelexperte" style="font-size: 16px"></i>
-                            &nbsp; <p>Items</p> <i class="fas fa-angle-left right"></i>
+                            &nbsp; <p>Post manager</p> <i class="fas fa-angle-left right"></i>
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="<%= linkPrefixItems %>" class="nav-link ml-2" data-active="index" >
+                            <a href="<%= linkPrefixCategory %>" class="nav-link ml-2" data-active="index" >
                                 <i class="nav-icon fas fa-list-ul" style="font-size: 12px"></i>
-                                <p>List</p>
+                                <p>Category</p>
                             </a>
                         </li>
 
-                        <li class="nav-item">
-                            <a href="<%= linkPrefixItems %>form" class="nav-link ml-2" data-active="form">
-                                <i class="nav-icon fas fa-edit" style="font-size: 12px"></i>
-                                <p>Form</p>
-                            </a>
-                        </li>
                     </ul>
                 </li>
 
