@@ -2,7 +2,6 @@ var express         = require("express");
 var router          = express.Router();
 const util          = require('util');
 
-const {check, body,validationResult}     = require('express-validator');    
 const moment        = require('moment');
 const { Session }   = require("inspector");
 
@@ -14,6 +13,11 @@ const paramsHelpers = require(__base_app     + "helpers/getParams");
 const systemConfig  = require(__path_configs + 'system');
 const validateGroups= require(__base_app    + `validations/${controllerName}`);
 const notify        = require(__path_configs + 'notify');
+const fileHelper    = require(__base_app     + "helpers/file");
+const folderUpload  = __path_public + "uploads/"+ controllerName+ "/";
+const fileSizeMB    =  systemConfig.file_size_mb;
+const uploadThumb   = fileHelper.uploadHelper('file', folderUpload, 6 , fileSizeMB);
+
 
 const pageTitle     = capitalizeFirstLetter(controllerName)+" Management - ";
 const pageTitleAdd  = pageTitle + "Add";
@@ -21,12 +25,13 @@ const pageTitleEdit = pageTitle + "Edit";
 const pageTitleList = pageTitle + "List";
 const linksIndex    = `/${systemConfig.prefix_admin}/manager/${controllerName}`;
 const folderViewBe  = `pages/backend/${controllerName}/`;
-const folderViewFe  = "pages/frontend/";
+
 
 //Get Form: Add or Edit
 router.get("/form(/:id)?",  (req, res, next) => {
   
-  let errors  = ""; 
+  let errors  =  req.session.errors; 
+
   let getId   = paramsHelpers.getParams(req.params, "id", "");
   let data    = {
     _id       : "",
@@ -34,68 +39,79 @@ router.get("/form(/:id)?",  (req, res, next) => {
     ordering  : "",
     status    : "",
     content   : "",
-    group_acp : ""
+    group_acp : "",
+    thumb     : ""
   }
   
   if( getId === "" ){ //form Add
-    res.render(folderViewBe + "form", {data,  pageTitle  : pageTitleAdd,  errors});
+    req.session.destroy();
+    res.render(folderViewBe + "form", {data,  pageTitle  : pageTitleAdd,  errors, fileSizeMB});
   }else{
      //form Edit
-    GroupsModel.findById(getId).then((data) =>{
-      res.render(folderViewBe + "form", { data, pageTitle  : pageTitleEdit, errors});
+     req.session.destroy();
+      GroupsModel.findById(getId).then((data) =>{
+      res.render(folderViewBe + "form", { data, pageTitle  : pageTitleEdit, errors, fileSizeMB});
     });
   }
 });
 
 // Handle data form 
-router.post("/save", validateGroups.validatorGroups() ,(req, res, next) => {
-    let errors = validationResult(req).array();
-    let data   = {
-      _id       : "",
-      name      : "",
-      ordering  : "",
-      status    : "",
-      content   : "",
-      group_acp : ""
-    } 
-
-    let group   = Object.assign(req.body);
-    let filter = { name:group.name, status:group.status, ordering: parseInt(group.ordering), content:group.content,
-      group_acp : group.group_acp,
-      modified  : {
-      user_id   : "er32fsdf",
-      user_name : "Founder",
-      time      : Date.now()
-    } };
-    
-    if(errors.length <= 0){
-       if(group.id !== '' && typeof group.id !== undefined){
-         //Handler edit
-          GroupsModel.update(group.id, filter).then((results)=>{
-          req.flash('success' , notify.UPDATE_SUCCESS, false);
-          res.redirect(linksIndex);
-     });
-
-      }else{
-        // Handler add 
-       filter = { name:group.name, status:group.status, ordering: parseInt(group.ordering), content:group.content,
-        group_acp : group.group_acp,
-        created : {
-          user_id   : "dfdfd212",
+router.post("/save",(req, res, next) => {
+  uploadThumb(req, res, async (errUpload)=>{
+        req.body        = JSON.parse(JSON.stringify(req.body));
+        let group       = Object.assign(req.body);
+        let taskCurrent = (typeof group !== undefined && group.id !=="") ? "edit" : "add";
+        let errors      = validateGroups.validator(req, errUpload,taskCurrent);
+        
+        let filter = { name:group.name, status:group.status, ordering: parseInt(group.ordering), content:group.content,
+          group_acp : group.group_acp,
+          modified  : {
+          user_id   : "er32fsdf",
           user_name : "Founder",
           time      : Date.now()
-         },
-        };
-        GroupsModel.add(filter).then( () => {
-          req.flash('success', notify.ADD_SUCCESS, false)
-          res.redirect(linksIndex);
-        });  
-      } 
-       
-    }else{
-      // Hander have errors
-      res.render(`${folderViewBe}form`, { pageTitle  : pageTitleAdd, data, errors} );
-    }
+        } };
+        
+        if(errors.length <= 0){
+          if(group.id !== '' && typeof group.id !== undefined){
+            //Handler edit
+            if(req.file === undefined || req.thumb === ''){ // no update img
+              group.thumb = group.img_old;
+            }
+            else{ //update img
+              group.thumb = req.file.filename;
+              await fileHelper.removeFile(folderUpload, req.body.img_old);
+              filter.thumb = group.thumb;
+            }
+            await GroupsModel.update(group.id, filter).then((result)=>{
+                  req.flash('success' , notify.UPDATE_SUCCESS, false);
+                  res.redirect(linksIndex);
+            });
+
+          }else{
+            // Handler add 
+          filter = { name:group.name, status:group.status, ordering: parseInt(group.ordering), content:group.content,
+            group_acp : group.group_acp,
+            created : {
+              user_id   : "dfdfd212",
+              user_name : "Founder",
+              time      : Date.now()
+            },
+            };
+            (req.file.filename !== undefined)? filter.thumb = req.file.filename : filter.thumb = "";
+            await GroupsModel.add(filter).then( () => {
+              req.flash('success', notify.ADD_SUCCESS, false)
+              res.redirect(linksIndex);
+            });  
+          } 
+          
+        }else{
+          // Hander have errors
+          req.session.errors   = errors; 
+           //Delete image when form error
+          if(req.file !== undefined) await fileHelper.removeFile(folderUpload, req.file.filename);
+          res.redirect(linksIndex + "/form/" + group.id);
+        }
+    });
      
 });
 
@@ -254,7 +270,6 @@ router.get("/sort(/:status)?/:field_name/:type_sort",(req, res, next) => {
   if(req.session.status !== "all"){
     res.redirect(linksIndex + "/" + req.session.status);
   }
-  console.log(req.session);
   res.redirect(linksIndex);
   
  });

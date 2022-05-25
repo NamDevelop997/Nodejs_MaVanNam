@@ -2,10 +2,8 @@ var express         = require("express");
 var router          = express.Router();
 const util          = require('util');
 
-const {check, body,validationResult}     = require('express-validator');    
 const moment        = require('moment');
-const { Session }   = require("inspector");
-const { group }     = require("console");
+
 
 const controllerName= "users";
 const UsersModel    = require(__path_models  + 'users');
@@ -14,8 +12,12 @@ const UtilsHelpers  = require(__base_app     + "helpers/Utils");
 const capitalizeFirstLetterHelpers  = require(__base_app     + "helpers/capitalizeFirstLetter");
 const paramsHelpers = require(__base_app     + "helpers/getParams");
 const systemConfig  = require(__path_configs + 'system');
-const validateUsers = require(__base_app    + `validations/${controllerName}`);
+const validateUsers = require(__base_app     + `validations/${controllerName}`);
 const notify        = require(__path_configs + 'notify');
+const fileHelper    = require(__base_app     + "helpers/file");
+const folderUpload  = __path_public + "uploads/"+ controllerName+ "/";
+const fileSizeMB    =  systemConfig.file_size_mb;
+const uploadAvatar  = fileHelper.uploadHelper('file', folderUpload, 6 , fileSizeMB);
 
 const pageTitle     = capitalizeFirstLetter(controllerName)+" Management - ";
 const pageTitleAdd  = pageTitle + "Add";
@@ -23,15 +25,18 @@ const pageTitleEdit = pageTitle + "Edit";
 const pageTitleList = pageTitle + "List";
 const linksIndex    = `/${systemConfig.prefix_admin}/manager/${controllerName}`;
 const folderViewBe  = `pages/backend/${controllerName}/`;
-const folderViewFe  = "pages/frontend/";
+
+
+
 
 //Get Form: Add or Edit
 router.get("/form(/:id)?", async (req, res, next) => {
   
-  let errors  = ""; 
+  let errors  =  req.session.errors; 
   let getId   = paramsHelpers.getParams(req.params, "id", "");
   let data    = {
     _id       : "",
+    avatar : "",
     name      : "",
     ordering  : "",
     status    : "",
@@ -47,86 +52,94 @@ router.get("/form(/:id)?", async (req, res, next) => {
   })
  
   if( getId === "" ){ //form Add
-    res.render(folderViewBe + "form", {data,  pageTitle  : pageTitleAdd,  errors, groupsItems});
+    req.session.destroy();
+    res.render(folderViewBe + "form", {data,  pageTitle  : pageTitleAdd,  errors, groupsItems, fileSizeMB});
   }else{
      //form Edit
     UsersModel.findById(getId).then((data) =>{
-      res.render(folderViewBe + "form", { data, pageTitle  : pageTitleEdit, errors, groupsItems});
+      req.session.destroy();
+      res.render(folderViewBe + "form", { data, pageTitle  : pageTitleEdit, errors, groupsItems, fileSizeMB});
     });
   }
 });
 
-// Handle data form 
-router.post("/save", validateUsers.validatorUsers() , async (req, res, next) => {
-    let errors = validationResult(req).array();
-    let data   = {
-      _id       : "",
-    name   : "",
-    ordering  : "",
-    status    : "",
-    content   : "",
-    group : {
-      id : "",
-      name: ""
-    }
-  };
-  
-    let user   = Object.assign(req.body);
-    let nameGroup = "";
-   
-    let groupsItems = [];
-    await GroupsModel.find({}).select('id name').then((groups) => {
-      groupsItems = groups;
-      groupsItems.forEach((item,i)=>{
-        if(item.id === user.groups){
-           nameGroup = item.name;
+
+// Handler data form 
+router.post("/save", (req, res, next) => {
+    uploadAvatar (req, res,async (errUpload)=> {
+        req.body   = JSON.parse(JSON.stringify(req.body));
+        let user   =  Object.assign(req.body);
+        let taskCurrent = (typeof user !==undefined && user.id !=="") ? "edit" : "add";
+        let errors = validateUsers.validator(req, errUpload, taskCurrent);
+        let nameGroup = "";
+        let groupsItems = [];
+
+        await GroupsModel.find({}).select('id name').then((groups) => {
+          groupsItems = groups;
+          groupsItems.forEach((item,i)=>{
+            if(item.id === user.groups){
+               nameGroup = item.name;
+            }
+          });
+        });
+        
+    
+        let filter = { name:user.name, status:user.status, ordering: parseInt(user.ordering), content:user.content,
+          group : {id: user.groups, name: nameGroup},
+          modified  : {
+            user_id   : "er32fsdf",
+            user_name : "Founder",
+            time      : Date.now()
+          } };
+         
+      
+        if(errors.length <= 0){
+           if(user.id !== '' && typeof user.id !== undefined){ 
+             //Handler edit
+             if(req.file === undefined || req.thumb === ''){ // no update img
+              user.avatar = user.img_old;
+            }
+            else{ //update img
+              user.avatar = req.file.filename;
+              await fileHelper.removeFile(folderUpload, req.body.img_old);
+              filter.avatar = user.avatar;
+            }
+            await UsersModel.update(user.id, filter).then(results => {
+               req.flash('success' , notify.UPDATE_SUCCESS, false);
+                res.redirect(linksIndex);
+              });
+    
+           }else{ // Handler add 
+            
+            filter = { name:user.name, status:user.status, ordering: parseInt(user.ordering), content:user.content,
+              group : {
+                id: user.groups,
+                
+              },
+              created : {
+                user_id   : "dfdfd212",
+                user_name : "Founder",
+                time      : Date.now()
+              },
+              };
+              (req.file.filename !== undefined)? filter.avatar = req.file.filename: filter.avatar = "";
+            await UsersModel.add(filter).then( () => {
+              req.flash('success', notify.ADD_SUCCESS, false)
+              res.redirect(linksIndex);
+            }); 
+          } 
+           
+        }else{
+          // Hander have errors    
+          req.session.errors = errors;
+          //Delete image when form error
+          if(req.file !== undefined) await fileHelper.removeFile(folderUpload, req.file.filename);
+          res.redirect(linksIndex + '/form/'+user.id);
         }
-      });
+  
+      })
     });
     
-
-    let filter = { name:user.name, status:user.status, ordering: parseInt(user.ordering), content:user.content,
-      group : {id: user.groups, name: nameGroup},
-      modified  : {
-        user_id   : "er32fsdf",
-        user_name : "Founder",
-        time      : Date.now()
-      } };
-     
-  
-    if(errors.length <= 0){
-       if(user.id !== '' && typeof user.id !== undefined){ //Handler edit
-        
-         UsersModel.update(user.id, filter).then(results => {
-           req.flash('success' , notify.UPDATE_SUCCESS, false);
-            res.redirect(linksIndex);
-          });
-
-      }else{ // Handler add 
-       
-       filter = { name:user.name, status:user.status, ordering: parseInt(user.ordering), content:user.content,
-        group : {
-          id: user.groups,
-          
-        },
-        created : {
-          user_id   : "dfdfd212",
-          user_name : "Founder",
-          time      : Date.now()
-         },
-        };
-        UsersModel.add(filter).then( () => {
-          req.flash('success', notify.ADD_SUCCESS, false)
-          res.redirect(linksIndex);
-        }); 
-      } 
-       
-    }else{
-      // Hander have errors
-      res.render(`${folderViewBe}form`, { pageTitle  : pageTitleAdd, data, errors, groupsItems} );
-    }
-     
-});
 
 //filter by status and page list users
 router.get("(/:status)?",async (req, res, next) => {
@@ -215,9 +228,6 @@ router.post('/change-group-ajax', (req, res, next)=>{
   let idUser = req.body.id;
   
   let getIDGroup = req.body.groupID;
-  let getGroupName = req.body.groupName;
-  console.log(getGroupName);
-  
   UsersModel.changeGroupAjax(idUser, getIDGroup).then((result)=>{
   
     res.send({"message": notify.CHANGE_GROUPS_SUCCESS, "className": "success"});

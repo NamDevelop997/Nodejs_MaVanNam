@@ -1,7 +1,7 @@
 <%   
     errsHelper = (errs) => {
-      console.log(232);
       let xhtmlErrs = '';
+      
       if(errs) {
           errs.forEach((err) => {
             xhtmlErrs += `<li>${err.param.charAt(0).toUpperCase() + err.param.slice(1)}: ${err.msg.charAt(0).toUpperCase() + err.msg.slice(1)}</li>`;

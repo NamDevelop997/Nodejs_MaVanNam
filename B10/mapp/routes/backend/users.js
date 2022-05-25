@@ -216,7 +216,7 @@ router.post('/change-group-ajax', (req, res, next)=>{
   
   let getIDGroup = req.body.groupID;
   let getGroupName = req.body.groupName;
-  console.log(getGroupName);
+
   
   UsersModel.changeGroupAjax(idUser, getIDGroup).then((result)=>{
   

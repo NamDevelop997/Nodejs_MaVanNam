@@ -6,6 +6,7 @@ var logger          = require('morgan');
 const flash         = require('express-flash-notification');
 const cookieParser  = require('cookie-parser');
 const session       = require('express-session');
+const validator     = require('express-validator');
 
 //Define path global app
 global.__base_app     = __dirname  + ('/mapp/');
@@ -14,6 +15,7 @@ global.__path_schemas = __base_app +'schemas/';
 global.__path_models  = __base_app  +'models/';
 global.__path_helpers = __base_app +'helpers/';
 global.__path_views   = __base_app +'views/';
+global.__path_public  =__base_app +'public/';
 global.__path_views_helpers   = __path_views  +'helpers/';
 
 const notify       = require(__base_app + 'public/js/notifyjs/notify.min');
@@ -21,9 +23,7 @@ const notify       = require(__base_app + 'public/js/notifyjs/notify.min');
 
 const databaseConfig= require(__path_configs + 'database');
 const systemConfig  = require(__path_configs + 'system');
-const CategoryModel    = require(__path_schemas+ "category");
-
-
+const CategoryModel = require(__path_schemas+ "category");
 
 var app             = express();
 
@@ -35,7 +35,8 @@ app.use(session({
   // cookie: { secure: true }
 }));
 
-// app.use(validator());
+app.use(validator());
+
 app.use(flash(app,{
   viewName: 'pages/backend/notification',
 }));

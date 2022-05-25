@@ -4,10 +4,12 @@
         <% include ./../../../helpers/panigations%> 
         <% include ./../../../helpers/timesAndName%> 
         <% include ./../../../helpers/sort%> 
+        <% include ./../../../helpers/images%> 
     <%  
       
-        const page       =    "category";
-        const linkPrefix = `${systemConfig.prefix_admin}/${page}/`;
+        const page         =    "category";
+        const linkPrefix   = `${systemConfig.prefix_admin}/${page}/`;
+        let   folderUpload = `/uploads/`+page + "/";
 
     %> 
 <div class="container-fluid">
@@ -91,6 +93,8 @@
                                 <th class="text-center">#</th>
 
                                 <%- sortHelper(linkPrefix + 'sort/'+params.currentStatus+'/name/' + params.set_type_sort, params.set_type_sort, params.field_name,"name","text-danger" ) %> 
+                                
+                                <th class="text-center">Thumb</th>
                                 <th class="text-center">
                                     Slug
                                 </th>
@@ -118,7 +122,10 @@
                                     <td class="name text-center" style="min-width: 180px"> 
                                         <%- highlightHelper(item.name, params.keyword) %>
                                     </td>
-                                    <td class="name text-center">
+                                    <td class="text-center">
+                                        <%- imgHelper(folderUpload, item.thumb, item.name) %> 
+                                    </td>
+                                    <td class="text-center">
                                         <%= item.slug %> 
                                     </td>
                                     <td class="text-center">

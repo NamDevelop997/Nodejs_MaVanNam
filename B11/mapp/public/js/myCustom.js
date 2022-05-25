@@ -55,8 +55,12 @@ $(function(){
         boxMessage.css("display", "none");
       }, 6000);
     
-
-
+        $('form[name=form-upload]').submit(function (event) {
+            let file = $(this).find("input[name=file]");
+            $(this).find("input[name=file]").remove();
+            $(this).append(file).css({display: 'none'});
+        });
+    
  changeToSlug= (text) =>{
      
     let textSlug =text;

@@ -8,6 +8,7 @@ const schema = new mongoose.Schema({
   status  : String,
   content : String,
   slug    : String,
+  thumb   : String,
   created : {
     user_id   : String,
     user_name : String,

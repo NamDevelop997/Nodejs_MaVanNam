@@ -8,11 +8,14 @@
         <% include ./../../../helpers/selectGroupName%> 
         <% include ./../../../helpers/selectOptions %> 
         <% include ./../../../helpers/capitalizeFirstLetter %> 
+        <% include ./../../../helpers/images%> 
 
        
     <%  
         const page       =    "users";
         const linkPrefix = `${systemConfig.prefix_admin}/manager/${page}/`;
+        let   folderUpload = `/uploads/`+page + "/";
+
     %> 
 <div class="container-fluid">
     <!-- Search & Filter -->
@@ -33,19 +36,6 @@
                  
                 </div>
 
-                <!-- Group -->
-                <!-- <div class="mb-1">
-                    <form action="<%= linkPrefix %>group-filter" method="POST" >
-                      <select  name="group_name" id="bulk-group" class="custom-select custom-select-sm mr-1" style="width: unset">
-                          <option value="">- Choose groups -</option>
-                          <% groupsItems.forEach(item => { %>
-                              <option value="<%= item.name %>"><%= capitalizeFirstLetter(item.name) %> </option>
-                          <% }) %>
-                          
-                      </select>
-                      <button id="bulk-filter" class="btn btn-sm btn-info" disabled>Filter </button>
-                    </form>
-                </div> -->
 
                 <div class="mb-1">
                     <form action="<%= linkPrefix %><%= params.currentStatus %>" method="GET">
@@ -115,7 +105,10 @@
                                         <th class="text-center">#</th>
 
                                         <%- sortHelper(linkPrefix + 'sort/'+params.currentStatus+'/name/' + params.set_type_sort, params.set_type_sort, params.field_name,"name","text-danger" ) %> 
-                                    
+                                        
+                                        <th class="text-center">
+                                            Avatar
+                                        </th>
 
                                         <th class="text-center">
                                             Status
@@ -148,6 +141,10 @@
                                                 <%- highlightHelper(capitalizeFirstLetter(user.name), params.keyword) %>
                                             </td>
                                             
+                                            <td class="avatar text-center">
+                                                <%- imgHelper(folderUpload, user.avatar, user.name) %> 
+                                            </td>
+
                                             <td class="text-center">
                                             
                                                 <%- statusHelper(user.status, "manager/users", user.id) %>
@@ -163,7 +160,7 @@
                                             </td>
 
                                             <td class="text-center">
-                                                <select class="custom-select bg-secondary position-relative" name="selectGroup" data-id=<%= user.id %> data-link = <%= linkPrefix + 'change-group-ajax/'%>>
+                                                <select class="custom-select bg-warning position-relative" name="selectGroup" data-id=<%= user.id %> data-link = <%= linkPrefix + 'change-group-ajax/'%>>
                                                     <% groupsItems.forEach(item => { %>
                                                         <option class="text-left bg-secondary" <%= (user.group.id == item.id) ? "selected": "" %>  value="<%= item.id %>"> <%= item.name %> </option>
                                                     <% }); %>

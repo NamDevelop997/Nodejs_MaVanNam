@@ -1,21 +1,25 @@
 var express         = require("express");
 var router          = express.Router();
 const util          = require('util');
-
-const {check, body,validationResult}     = require('express-validator');    
+  
 const moment        = require('moment');
 const { Session }   = require("inspector");
 
 const controllerName= "category";
-
-const UtilsHelpers  = require(__base_app     + "helpers/Utils");
+const UtilsHelpers  = require(__base_app        + "helpers/Utils");
 const capitalizeFirstLetterHelpers  = require(__base_app     + "helpers/capitalizeFirstLetter");
 const paramsHelpers    = require(__base_app     + "helpers/getParams");
 const systemConfig     = require(__path_configs +'system');
-const validateCategory = require(__base_app  +'validations/category');
+const validateCategory = require(__base_app     +`validations/${controllerName}`);
 const notify           = require(__path_configs + 'notify');
 const CategoryModel    = require(__path_models  + 'category');
 const slug             = require('slug');
+const fileHelper       = require(__base_app     + "helpers/file");
+const folderUpload     = __path_public + "uploads/"+ controllerName + "/";
+const fileSizeMB       =  systemConfig.file_size_mb;
+const uploadThumb      = fileHelper.uploadHelper('file', folderUpload, 6 , fileSizeMB);
+
+
 
 const pageTitle     = capitalizeFirstLetter(controllerName)+ " Management - ";
 const pageTitleAdd  = pageTitle + "Add";
@@ -23,13 +27,12 @@ const pageTitleEdit = pageTitle + "Edit";
 const pageTitleList = pageTitle + "List";
 const linksIndex    = `/${systemConfig.prefix_admin}/${controllerName}`;
 const folderViewBe  = `pages/backend/${controllerName}/`;
-const folderViewFe  = "pages/frontend/";
 
 
 //Get Form: Add or Edit
 router.get("/form(/:id)?",  (req, res, next) => {
   
-  let errors  = ""; 
+  let errors  =  req.session.errors; 
   let getId   = paramsHelpers.getParams(req.params, "id", "");
   let data    = {
     _id       : "",
@@ -37,67 +40,77 @@ router.get("/form(/:id)?",  (req, res, next) => {
     ordering  : "",
     status    : "",
     content   : "",
-    slug      : ""
+    slug      : "",
+    thumb     : ""
   }
   
   if( getId === "" ){ //form Add
-    res.render(folderViewBe + "form", {data,  pageTitle  : pageTitleAdd,  errors});
+    req.session.destroy();
+    res.render(folderViewBe + "form", {data,  pageTitle  : pageTitleAdd,  errors, fileSizeMB});
   }else{
      //form Edit
+     req.session.destroy();
       CategoryModel.findById(getId).then((data) =>{
-      res.render(folderViewBe + "form", { data, pageTitle  : pageTitleEdit, errors});
+      res.render(folderViewBe + "form", { data, pageTitle  : pageTitleEdit, errors, fileSizeMB});
     });
   }
 });
 
 // Handle data form 
-router.post("/save", validateCategory.validatorCategory() ,(req, res, next) => {
-    let errors = validationResult(req).array();
-    
-    let data   = {
-      _id       : "",
-      name      : "",
-      ordering  : "",
-      status    : "",
-      content   : "",
-      slug      : ""
-    } 
-
-    let category   = Object.assign(req.body);
-    let filter = { name:category.name, slug: slug(category.slug), status:category.status, ordering: parseInt(category.ordering), content:category.content,
-      modified : {
-      user_id   : "er32fsdf",
-      user_name : "Admin",
-      time      : Date.now()
-    } };
-    
-    if(errors.length <= 0){
-       if(category.id !== '' && typeof category.id !== undefined){
-         //Handler edit
-         CategoryModel.update(category.id, filter).then((result)=>{
-              req.flash('success' , notify.UPDATE_SUCCESS, false);
-              res.redirect(linksIndex);
-         });
-
-      }else{
-        // Handler add 
-       filter = { name:category.name, slug: slug(category.slug), status:category.status, ordering: parseInt(category.ordering), content:category.content,
-        created : {
-          user_id   : "dfdfd",
-          user_name : "user1",
+router.post("/save",(req, res, next) => {
+    uploadThumb(req, res, async (errUpload) => {
+        req.body        = JSON.parse(JSON.stringify(req.body));
+        let category    = Object.assign(req.body);
+        let taskCurrent = (typeof category !== undefined && category.id !=="") ? "edit" : "add";
+        let errors      = validateCategory.validator(req, errUpload,taskCurrent);
+      
+        let filter = { name:category.name, slug: slug(String(category.slug)), status:category.status, ordering: parseInt(category.ordering), content:category.content,
+          modified : {
+          user_id   : "er32fsdf",
+          user_name : "Admin",
           time      : Date.now()
-         },
-        };
-        CategoryModel.add(filter).then( () => {
-          req.flash('success', notify.ADD_SUCCESS, false)
-          res.redirect(linksIndex);
-        }); 
-      } 
-       
-    }else{
-      // Hander have errors
-      res.render(`${folderViewBe}form`, { pageTitle  : pageTitleAdd, data, errors} );
-    }
+        } };
+        
+        if(errors.length <= 0){
+          if(category.id !== '' && typeof category.id !== undefined){
+            //Handler edit
+            if(req.file === undefined || req.thumb === ''){ // no update img
+              category.thumb = category.img_old;
+            }
+            else{ //update img
+              category.thumb = req.file.filename;
+              await fileHelper.removeFile(folderUpload, req.body.img_old);
+              filter.thumb = category.thumb;
+            }
+            await CategoryModel.update(category.id, filter).then((result)=>{
+                  req.flash('success' , notify.UPDATE_SUCCESS, false);
+                  res.redirect(linksIndex);
+            });
+
+          }else{
+            // Handler add 
+          filter = { name:category.name, slug: slug(category.slug), status:category.status, ordering: parseInt(category.ordering), content:category.content,
+            created : {
+              user_id   : "dfdfd",
+              user_name : "user1",
+              time      : Date.now()
+            },
+            };
+            (req.file.filename !== undefined)? filter.thumb = req.file.filename: filter.thumb = "";
+            await CategoryModel.add(filter).then( () => {
+              req.flash('success', notify.ADD_SUCCESS, false)
+              res.redirect(linksIndex);
+            }); 
+          } 
+          
+        }else{
+          // Hander have errors
+          req.session.errors   = errors; 
+          //Delete image when form error
+          if(req.file !== undefined) await fileHelper.removeFile(folderUpload, req.file.filename);
+          res.redirect(linksIndex + "/form/" + category.id);
+        }
+  });
      
 });
 

@@ -1,12 +1,13 @@
 
 const UsersData     = require(__path_schemas + "users");
 const notify        = require(__path_configs + 'notify');
+const fileHelper    = require(__base_app   + "helpers/file");
 
 module.exports = {
 
     listItems: (params, option = null) => {
         return UsersData.find(params.ObjWhere)
-        .select("name status ordering created modified group")
+        .select("name status ordering created modified group avatar")
         .limit(params.panigations.totalItemsPerpage)
         .skip((params.panigations.currentPage - 1) * params.panigations.totalItemsPerpage)
         .sort(params.sort)
@@ -92,12 +93,22 @@ module.exports = {
   }, 
     
     
-    delete: (cid) => {
-           if (Array.isArray(cid)) {
+    delete: async (cid) => {
+      let filePath = __path_public +'uploads/users/';
+        if (Array.isArray(cid)) {
+            for (const key of cid) {
+              await UsersData.findById(key).then((data)=>{
+                  fileHelper.removeFile(filePath, data.avatar);
+               });
+                 
+             }
                 return UsersData.deleteMany({_id : cid});
-           }else{
+        }else{
+          await UsersData.findById(cid).then((data)=>{
+            fileHelper.removeFile(filePath, data.avatar);
+           });
                 return UsersData.findOneAndRemove({ _id: cid });
-           }
+          }
         
     },
     add: (filter) => {

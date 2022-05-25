@@ -12,10 +12,10 @@
 
 
 <section class="content">
-    <form action="<%= linkPrefix %>save" method="POST" class="mb-0" id="admin-form">
+    <form action="<%= linkPrefix %>save" name="form-upload" class="mb-0" enctype="multipart/form-data" method="POST">
         <div class="container-fluid"> 
             <div class="card card-info card-outline mb-0">
-                <% if(errors){ %>
+                <% if(!errors == ""){ %>
                     <%- errsHelper(errors) %>   
                  <% } %> 
                 <input type="hidden" name="id" value = "<%= data.id %>" class="form-control form-control-sm" >
@@ -30,6 +30,16 @@
                         <input type="text" id="form[name]" name="name" value="<%= data.name %>" placeholder="Enter user name here..." class="form-control form-control-sm">
                     </div>
                 </div>
+                
+                <div class="form-group row">
+                    <label for="form[avatar]" class="col-sm-2 col-form-label text-sm-right ">Avatar</label>
+                    <div class="col-xs-12 col-sm-8 form-group" >
+                        <input type="file" id="form[avatar]" class="form-control form-control-sm" name ="file">
+                        <p class="text-danger">Chú ý: File phải ở dạng hình ảnh ("jpg, jpeg, png, gif"), kích thước file từ <%= fileSizeMB %>MB trở xuống. </p>
+                        <img class="rounded " src="uploads/users/<%= (data.avatar=='' || data.avatar == undefined)  ? 'no-img.jpg' : data.avatar %> " alt="img" style="max-width:12%">
+                    </div>
+                </div>
+
                 <div class="form-group row">
                         <label for="form[status]" class="col-sm-2 col-form-label text-sm-right">Status</label>
                         <div class="col-xs-12 col-sm-8">
@@ -55,8 +65,8 @@
                 <div class="form-group row">
                     <%- textAreaHelper("Content","content",data.content) %> 
                 </div>
-
-                </div>
+                <input type="hidden" name="img_old" value="<%= data.avatar %>">
+               
                 <div class="card-footer">
                     <div class="col-12 col-sm-8 offset-sm-2" id = "btn-submit">
                         <button type="submit" class="btn btn-sm btn-success mr-1">Save</button>
