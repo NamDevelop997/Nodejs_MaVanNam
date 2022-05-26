@@ -1,0 +1,18 @@
+
+<% 
+
+    timesAndNameHelper = (type,times, name) => {
+        let XHTMLTimeandName= "";
+        let formatTime      = type === "created" ? "L" : "LTS L";
+        
+        return `
+            <td class="text-left position-relative">
+                <i class="fa fa-user text-primary"></i> ${(name) ?name: "---"} </br>
+                <i class="fa fa-clock text-success"></i> ${(times) ? moment(times).format(formatTime): "---"} 
+            </td>`;
+    }
+%>
+
+
+
+   

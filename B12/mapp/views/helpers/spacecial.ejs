@@ -1,0 +1,7 @@
+<% spacecialHelper = (spacecial, type, id) => {
+    let links    =  `${systemConfig.prefix_admin}/${type}/change-spacecial/${id}/${spacecial}`;
+    let colorBtn = (spacecial == "yes") ?"success": "danger";
+    let icon     = (spacecial == "yes") ?"fa-check-square": "fa-square";
+        return `<a href="javascript:changeSpacecial('${links}')" id= "spacecial" class = "spacecial-${id} position-relative"><i class="fa ${icon}"></i></a>`;
+}
+%>

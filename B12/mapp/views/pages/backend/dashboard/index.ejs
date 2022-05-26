@@ -1,0 +1,61 @@
+<div class="container-fluid">
+    <div class="row justify-content-start">
+        <!-- Items -->
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-info">
+                <div class="inner">
+                     <h3 class="text-white"><%= countItems %></h3>
+                        <p>Category</p>
+                </div>
+                <div class="icon">
+                    <i class="fab fa-gitter"></i>
+                </div>
+                <a href="<%= systemConfig.prefix_admin %>/category" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+
+        <!-- Groups ACP -->
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-success">
+                <div class="inner">
+                     <h3><%= countGroups %></h3>
+                        <p>Groups</p>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-layer-group"></i>
+                    
+                </div>
+                <a href="<%= systemConfig.prefix_admin %>/manager/groups" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+
+         <!-- Articles -->
+         <div class="col-lg-3 col-6">
+            <div class="small-box bg-primary">
+                <div class="inner">
+                     <h3><%= countArticles %></h3>
+                        <p>Articles</p>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-newspaper"></i>
+                    
+                </div>
+                <a href="<%= systemConfig.prefix_admin %>/post-manager/articles" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+
+        <!-- Users -->
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-warning">
+                <div class="inner">
+                     <h3><%= countUsers %></h3>
+                        <p>Users</p>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-users"></i>
+                </div>
+                <a href="<%= systemConfig.prefix_admin %>/manager/users" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,97 @@
+<%  
+        const page       =    "articles";
+        const linkPrefix = `${systemConfig.prefix_admin}/post-manager/${page}/`;
+        
+%> 
+<% include ./../../../helpers/input %> 
+<% include ./../../../helpers/textArea%> 
+<% include ./../../../helpers/errs %> 
+<% include ./../../../helpers/selectOptions %> 
+
+
+
+
+<section class="content">
+    <form action="<%= linkPrefix %>save" name="form-upload" class="mb-0" enctype="multipart/form-data" method="POST">
+        <div class="container-fluid"> 
+            <div class="card card-info card-outline mb-0">
+                <% if(!errors == ""){ %>
+                    <%- errsHelper(errors) %>   
+                 <% } %> 
+                <input type="hidden" name="id" value = "<%= data.id %>" class="form-control form-control-sm" >
+                <% if(data.id !== undefined) {%>
+                    <div class="form-group row mt-3">
+                        <%- inputHelper('ID',"text","id", data.id, "disabled") %> 
+                    </div>
+                <% } %>    
+                <div class="form-group row <%= (data.id !== undefined) ? '': 'first mt-3' %>">
+                    <label for="form[name]" class="col-sm-2 col-form-label text-sm-right ">Name</label>
+                    <div class="col-xs-12 col-sm-8">
+                        <input type="text" id="form[name]" name="name" value="<%= data.name %>" placeholder="Enter user name here..." class="form-control form-control-sm">
+                    </div>
+                </div>
+                
+                <div class="form-group row">
+                    <label for="form[thumb]" class="col-sm-2 col-form-label text-sm-right ">Thumb</label>
+                    <div class="col-xs-12 col-sm-8 form-group" >
+                        <input type="file" id="form[thumb]" class="form-control form-control-sm" name ="file">
+                        <p class="text-danger">Chú ý: File phải ở dạng hình ảnh ("jpg, jpeg, png, gif"), kích thước file từ <%= fileSizeMB %>MB trở xuống. </p>
+                        <img class="rounded " src="uploads/articles/<%= (data.thumb=='' || data.thumb == undefined)  ? 'no-img.jpg' : data.thumb %> " alt="img" style="max-width:12%">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                        <label for="form[status]" class="col-sm-2 col-form-label text-sm-right">Status</label>
+                        <div class="col-xs-12 col-sm-8">
+                            <select id="form[status]" name="status" class="custom-select custom-select-sm">
+                                <option value=""> - Select status - </option>
+                               
+                                 <option value="active"<%= (data.status === "active") ? 'selected' : ''%>>active</option>
+
+                               
+                                <option value="inactive"<%= (data.status === "inactive") ? 'selected' : ''%>>Inactive</option>
+                             
+                            </select>
+                        </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="form[spacecial]" class="col-sm-2 col-form-label text-sm-right">Spacecial</label>
+                    <div class="col-xs-12 col-sm-8">
+                        <select id="form[spacecial]" name="spacecial" class="custom-select custom-select-sm">
+                            <option value=""> - Select spacecial - </option>
+                           
+                             <option value="yes"<%= (data.spacecial === "yes") ? 'selected' : ''%>>YES</option>
+
+                            <option value="no"<%= (data.spacecial === "no") ? 'selected' : ''%>>NO</option>
+                         
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                        <%- inputHelper('Ordering',"number","ordering", data.ordering, "") %> 
+                </div>
+              
+                
+                <%- selectOptionsHelper(categoryItems, 'category', data.category.id) %> 
+
+                <div class="form-group row">
+                    <%- textAreaHelper("Content","content",data.content) %> 
+                </div>
+                <input type="hidden" name="img_old" value="<%= data.thumb %>">
+               
+                <div class="card-footer">
+                    <div class="col-12 col-sm-8 offset-sm-2" id = "btn-submit">
+                        <button type="submit" class="btn btn-sm btn-success mr-1">Save</button>
+                        
+                        <a href="<%= linkPrefix %>" class="btn btn-sm btn-danger mr-1"> Cancel</a>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </form>
+</section>
+
+

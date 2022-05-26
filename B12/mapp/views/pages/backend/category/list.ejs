@@ -1,0 +1,182 @@
+        <% include ./../../../helpers/filterStatus %> 
+        <% include ./../../../helpers/status%> 
+        <% include ./../../../helpers/highlight%> 
+        <% include ./../../../helpers/panigations%> 
+        <% include ./../../../helpers/timesAndName%> 
+        <% include ./../../../helpers/sort%> 
+        <% include ./../../../helpers/images%> 
+        <% include ./../../../helpers/textLimit%> 
+    <%  
+      
+        const page         =    "category";
+        const linkPrefix   = `${systemConfig.prefix_admin}/post-manager/${page}/`;
+        let   folderUpload = `/uploads/`+page + "/";
+
+    %> 
+<div class="container-fluid">
+    <!-- Search & Filter -->
+    <div class="card card-info card-outline border-success">
+        <div class="card-header">
+            <h6 class="card-title">Search &amp; Filter</h6>
+            <div class="card-tools">
+                <a href="<%= linkPrefix %>" class="btn btn-sm btn-outline-danger" ><i class="fa fa-redo"></i></a>
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip"
+                    title="Collapse">
+                    <i class="fas fa-minus"></i></button>
+            </div>
+        </div>
+        <div class="card-body ">
+            <div class="row justify-content-between">
+                <div class="mb-1">
+                    <%- filterStatusHelper(params.filterStatusCategory, params.keyword, linkPrefix) %>
+                 
+                </div>
+
+                <div class="mb-1">
+                    <form action="<%= linkPrefix %><%= params.currentStatus %>" method="GET">
+                        <div class="input-group">
+                            <input type="text"  class="form-control form-control-sm" name="keyword" value="<%= params.keyword %>" placeholder="Enter the name..."
+                                style="min-width: 300px">
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-sm btn-info" ><i class="fa fa-search"></i></button>
+                                <a href="<%= linkPrefix %><%= params.currentStatus %>" class="btn btn-sm btn-warning" ><i class="fa fa-times"></i></a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- List -->
+    <%- locals.flash %>
+
+    <div class="card card-info m-auto">
+        <div class="card-header">
+            <h4 class="card-title">List category</h4>
+            <div class="card-tools">
+              
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip"
+                    title="Collapse"><i class="fas fa-minus"></i></button>
+            </div>
+        </div>
+        <% if(items.length >= 1){ %> 
+            <div class="card-body">
+                <!-- Control -->
+            <form action="<%= linkPrefix %>action" method="POST">
+                <div class="d-flex flex-wrap align-items-center justify-content-between mb-2">
+                    <div class="mb-1">
+                        <select id="bulk-action" name="action" class="custom-select custom-select-sm mr-1"
+                            style="width: unset">
+                            <option value="" selected="">---Change options---</option>
+                            <option value="active">Status (active)</option>
+                            <option value="inactive">Status (inactive)</option>
+                            <option value="ordering">Ordering</option>
+                            <option value="delete">Delete</option>
+                        </select> <button id="bulk-apply" class="btn btn-sm btn-info" disabled>Apply <span
+                                class="badge badge-pill badge-danger navbar-badge" style="display: none"></span></button>
+                    </div>
+                    <div class="mb-1">
+                        <a href="<%= linkPrefix %>form" class="btn btn-sm btn-info"><i class="fas fa-plus"></i> Add
+                            New</a>
+                    </div>
+                </div>
+             
+                <!-- End control -->
+
+                <!-- List Content -->
+               
+                    <table class="table table-bordered table-hover text-nowrap btn-table mb-0">
+                        <thead>
+                            <tr>
+                                <th class="text-center">
+                                    <input type="checkbox"  name="all" id="checkall"/>
+                                </th>
+                                <th class="text-center">#</th>
+
+                                <%- sortHelper(linkPrefix + 'sort/'+params.currentStatus+'/name/' + params.set_type_sort, params.set_type_sort, params.field_name,"name","text-danger" ) %> 
+                                
+                                <th class="text-center">Thumb</th>
+                                <th class="text-center">
+                                    Slug
+                                </th>
+
+                                <th class="text-center">
+                                    Status
+                                </th>
+                               
+                                <%- sortHelper(linkPrefix + 'sort/'+params.currentStatus+'/ordering/' + params.set_type_sort, params.set_type_sort, params.field_name,"ordering","text-danger" ) %> 
+
+                            
+                                <%- sortHelper(linkPrefix + 'sort/'+params.currentStatus+'/created/' + params.set_type_sort, params.set_type_sort, params.field_name, "created", "text-danger" ) %> 
+
+                                <th class="text-center">Update at</th>
+
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% items.forEach( (item, index) => { %>
+                                <tr id="tr-<%= item._id %>" >
+                                    <td class="text-center">
+                                        <input class="cb-element" type="checkbox" name="cid" id="checkbox-5" value="<%= item._id %>">
+                                    </td>
+                                    <td class="text-center"><%= index+=1 %> </td>
+                                    <td class="name text-center" style="min-width: 180px"> 
+                                        <%- highlightHelper(item.name, params.keyword) %>
+                                    </td>
+                                    <td class="text-center">
+                                        <%- imgHelper(folderUpload, item.thumb, item.name) %> 
+                                    </td>
+                                    <td class="text-center">
+                                        <%= textLimitHelper(item.slug, 15) %> 
+                                    </td>
+                                    <td class="text-center">
+                                       
+                                        <%- statusHelper(item.status, "category", item.id) %>
+                                        
+                                    </td>
+                                    
+                        
+                                    <td class="text-center position-relative">
+                                        <input type="number"
+                                            value="<%= item.ordering %>" id="<%= item.id %>"
+                                            class="bg-warning chkOrdering form-control form-control-sm m-auto text-center ordering"
+                                            style="width: 65px" min="1" data-link = <%= linkPrefix + 'change-ordering-ajax' %> data-id= <%= item.id %> >
+                                    </td>
+                                    <%- timesAndNameHelper("created",item.created.time, item.created.user_name) %> 
+                                    <%- timesAndNameHelper("update",item.modified.time, item.modified.user_name) %>
+                                   
+
+                                    <td class="text-center">
+                                        <a href="<%= linkPrefix %>form/<%= item._id %>" class="rounded-circle btn btn-sm btn-info" title="Edit">
+                                            <i class="fas fa-pencil-alt"></i>
+                                        </a>
+                                        
+                                        <a  href="javascript:deleteAjax('<%= linkPrefix %>destroy/<%=item. _id %>/<%=item.status%>')" data-id = "<%= item.id %>" class = "btn btn-sm btn-danger" title="Delete" >
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+    
+                                        
+                                    </td>
+                                </tr>   
+                            <% }) %>
+                                
+                        </tbody>
+                    </table>
+            </form>
+                <!-- End list content -->
+            </div>
+         <% }else{ %>
+            <div class="card-body alert alert-warning text-center">Sorry!, We couldn't find any results</div>
+         <% } %>       
+    </div>
+    
+
+    <!-- //Panigation -->
+    <% if(items.length > 0){%>
+        <%- panigationHelper(params.panigations, "category", params.currentStatus, params.keyword) %>
+    <%} %> 
+    <!-- End panigation -->
+
+
+</div>

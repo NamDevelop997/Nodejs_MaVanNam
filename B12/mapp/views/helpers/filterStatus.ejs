@@ -1,0 +1,20 @@
+
+
+<% 
+
+    filterStatusHelper = (statusFilter, keyword, links) => {
+        let XHTMLStatusFilter = ""
+        if (keyword !== "") { 
+            statusFilter.forEach( (status) => { 
+                XHTMLStatusFilter += `<a href="${links}${status.value}/?keyword=${keyword}" class="mr-1 btn btn-sm text-dark text-bold ${status.class}">${status.name.toUpperCase()} <span class="text-dark">(${status.count}</span>)</a>`;
+                  
+            }) ;
+        }else{
+            statusFilter.forEach( (status) => { 
+                XHTMLStatusFilter += `<a href="${links}${status.value}" class="mr-1 btn btn-sm text-dark text-bold ${status.class}">${status.name.toUpperCase()} <span class="text-dark">(${status.count}</span>)</a>`;
+                  
+            }) ;
+        }
+        return XHTMLStatusFilter;
+    }
+%>
