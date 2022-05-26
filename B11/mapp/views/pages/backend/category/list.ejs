@@ -5,10 +5,11 @@
         <% include ./../../../helpers/timesAndName%> 
         <% include ./../../../helpers/sort%> 
         <% include ./../../../helpers/images%> 
+        <% include ./../../../helpers/textLimit%> 
     <%  
       
         const page         =    "category";
-        const linkPrefix   = `${systemConfig.prefix_admin}/${page}/`;
+        const linkPrefix   = `${systemConfig.prefix_admin}/post-manager/${page}/`;
         let   folderUpload = `/uploads/`+page + "/";
 
     %> 
@@ -66,9 +67,9 @@
                     <div class="mb-1">
                         <select id="bulk-action" name="action" class="custom-select custom-select-sm mr-1"
                             style="width: unset">
-                            <option value="" selected="">---Options---</option>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
+                            <option value="" selected="">---Change options---</option>
+                            <option value="active">Status (active)</option>
+                            <option value="inactive">Status (inactive)</option>
                             <option value="ordering">Ordering</option>
                             <option value="delete">Delete</option>
                         </select> <button id="bulk-apply" class="btn btn-sm btn-info" disabled>Apply <span
@@ -105,6 +106,7 @@
                                
                                 <%- sortHelper(linkPrefix + 'sort/'+params.currentStatus+'/ordering/' + params.set_type_sort, params.set_type_sort, params.field_name,"ordering","text-danger" ) %> 
 
+                            
                                 <%- sortHelper(linkPrefix + 'sort/'+params.currentStatus+'/created/' + params.set_type_sort, params.set_type_sort, params.field_name, "created", "text-danger" ) %> 
 
                                 <th class="text-center">Update at</th>
@@ -126,23 +128,23 @@
                                         <%- imgHelper(folderUpload, item.thumb, item.name) %> 
                                     </td>
                                     <td class="text-center">
-                                        <%= item.slug %> 
+                                        <%= textLimitHelper(item.slug, 15) %> 
                                     </td>
                                     <td class="text-center">
                                        
                                         <%- statusHelper(item.status, "category", item.id) %>
                                         
-                                    </td> 
+                                    </td>
                                     
-
+                        
                                     <td class="text-center position-relative">
                                         <input type="number"
                                             value="<%= item.ordering %>" id="<%= item.id %>"
                                             class="bg-warning chkOrdering form-control form-control-sm m-auto text-center ordering"
                                             style="width: 65px" min="1" data-link = <%= linkPrefix + 'change-ordering-ajax' %> data-id= <%= item.id %> >
                                     </td>
-                                    <%- timesAndNameHelper("created",item.created.time,item.created.user_name) %> 
-                                    <%- timesAndNameHelper("update",item.modified.time,item.modified.user_name) %>
+                                    <%- timesAndNameHelper("created",item.created.time, item.created.user_name) %> 
+                                    <%- timesAndNameHelper("update",item.modified.time, item.modified.user_name) %>
                                    
 
                                     <td class="text-center">

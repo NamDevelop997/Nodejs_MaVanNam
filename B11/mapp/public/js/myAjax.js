@@ -28,6 +28,36 @@ changeStatus = (links) => {
     
 }
 
+//Change Spacecial Ajax
+changeSpacecial = (links) => {
+    let url = links;
+    $.ajax({
+        type: "GET",
+        url: url,
+        dataType: "json",
+        success:  (res) => {
+        
+            let spacecial = res.result.changeSpacecial;
+            let linkIndex = res.linksIndex;
+            let cid       = res.result.cid;
+            let dataNotices = res.result.notify;
+            let current    = $(`.spacecial-${cid}`);
+            let linkStatus = linkIndex + '/change-spacecial/'+ cid +"/" + spacecial;
+            let colorBtn   = (spacecial == "yes") ?"success": "danger";
+            let icon       = (spacecial == "yes")? "fa-check-square": "fa-square";
+
+            let Xhtml      = `<a href="javascript:changeSpacecial('${linkStatus}')" class ="spacecial-${cid} position-relative" id= "spacecial"><i class="fa ${icon} "></i></a>`;
+            
+            current.notify(
+                dataNotices.title, 
+                { position: "top center", className: dataNotices.className }
+              );
+            current.replaceWith(Xhtml);
+        }
+    });
+    
+}
+
 //Change groups Ajax
 changeGroup = (links) => {
     let url = links;
@@ -57,6 +87,7 @@ changeGroup = (links) => {
     });
     
 }
+
 
 //Change groups Ajax
 deleteAjax = (links) => {
@@ -129,6 +160,34 @@ $('input.ordering').change(function () {
         }
     });
 });
+
+//Change category Ajax
+$('select[ name = selectCategory]').change(function () {
+    
+    let  current = $(this);
+    let  url = $(this).data('link');
+    let  idArticle = $(this).data('id');
+    let  categoryID  = $(this).val();
+    let  categoryName = current.text();
+    
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: {
+            "id"           : idArticle,
+            "categoryID"   : categoryID,
+            "categoryName" : categoryName
+        },
+        dataType: "json",
+        success: function (res) {
+            current.notify(
+                res.message, 
+                { position: "top center", className: res.className }
+              );
+            
+        }
+    });
+});
  
 //Change group Ajax for module Users
 $('select[ name = selectGroup]').change(function () {
@@ -145,7 +204,7 @@ $('select[ name = selectGroup]').change(function () {
         data: {
             "id"        : idUser,
             "groupID"   : groupID,
-            "groupName"     :     groupName
+            "groupName" : groupName
 
         },
         dataType: "json",

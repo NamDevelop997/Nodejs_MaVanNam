@@ -1,5 +1,6 @@
         <% include ./../../../helpers/filterStatus %> 
         <% include ./../../../helpers/status%> 
+        <% include ./../../../helpers/spacecial%> 
         <% include ./../../../helpers/highlight%> 
         <% include ./../../../helpers/panigations%> 
         <% include ./../../../helpers/timesAndName%> 
@@ -12,8 +13,8 @@
 
        
     <%  
-        const page       =    "users";
-        const linkPrefix = `${systemConfig.prefix_admin}/manager/${page}/`;
+        const page       =    "articles";
+        const linkPrefix = `${systemConfig.prefix_admin}/post-manager/${page}/`;
         let   folderUpload = `/uploads/`+page + "/";
 
     %> 
@@ -32,7 +33,7 @@
         <div class="card-body ">
             <div class="row justify-content-between">
                 <div class="mb-1">
-                    <%- filterStatusHelper(params.filterStatusUsers, params.keyword, linkPrefix) %>
+                    <%- filterStatusHelper(params.filterStatusArticles, params.keyword, linkPrefix) %>
                  
                 </div>
 
@@ -57,7 +58,7 @@
 
     <div class="card card-info m-auto">
         <div class="card-header">
-            <h4 class="card-title">List users</h4>
+            <h4 class="card-title">List articles</h4>
             <div class="card-tools">
               
                 <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip"
@@ -77,14 +78,14 @@
                                     <option value="" selected="">---Change options---</option>
                                     <option value="active">Status (active)</option>
                                     <option value="inactive">Status (inactive)</option>
+                                    <option value="yes">Spacecial (YES)</option>
+                                    <option value="no">Spacecial (NO)</option>
                                     <option value="ordering">Ordering</option>
                                     <option value="delete">Delete</option>
                                 </select> <button id="bulk-apply" class="btn btn-sm btn-info"disabled>Apply </button>
                             </div>
                         
-                            
-                          
-                           
+
                             <div class="mb-1">
                                 
                                 <a href="<%= linkPrefix %>form" class="btn btn-sm btn-info"><i class="fas fa-plus"></i> Add
@@ -107,7 +108,7 @@
                                         <%- sortHelper(linkPrefix + 'sort/'+params.currentStatus+'/name/' + params.set_type_sort, params.set_type_sort, params.field_name,"name","text-danger" ) %> 
                                         
                                         <th class="text-center">
-                                            Avatar
+                                            Thumb
                                         </th>
 
                                         <th class="text-center">
@@ -117,7 +118,11 @@
                                         <%- sortHelper(linkPrefix + 'sort/'+params.currentStatus+'/ordering/' + params.set_type_sort, params.set_type_sort, params.field_name,"ordering","text-danger" ) %>
 
                                         <th class="text-center">
-                                            Group
+                                            Spacecial
+                                        </th>
+
+                                        <th class="text-center">
+                                            Category
                                         </th>
 
                                         <%- sortHelper(linkPrefix + 'sort/'+params.currentStatus+'/created/' + params.set_type_sort, params.set_type_sort, params.field_name, "created", "text-danger" ) %> 
@@ -129,55 +134,60 @@
                                 </thead>
                                 <tbody>
                                     
-                                    <% data.forEach( (user, index) => { %> 
-                                    
-                                        <tr id="tr-<%= user.id %>">
+                                    <% data.forEach( (article, index) => { %>  
+                                        <tr id="tr-<%= article.id %>">
                                             <td class="text-center">
-                                                <input class="cb-element" type="checkbox" name="cid" id="checkbox-5" value="<%= user._id %>">
+                                                <input class="cb-element" type="checkbox" name="cid" id="checkbox-5" value="<%= article._id %>">
                                             </td>
                                             <td class="text-center"><%= index+=1 %> </td>
                                             <td class="name text-center" style="min-width: 180px"> 
                                                 
-                                                <%- highlightHelper(capitalizeFirstLetter(user.name), params.keyword) %>
+                                                <%- highlightHelper(capitalizeFirstLetter(article.name), params.keyword) %>
                                             </td>
                                             
                                             <td class="avatar text-center">
-                                                <%- imgHelper(folderUpload, user.avatar, user.name) %> 
+                                                <%- imgHelper(folderUpload, article.thumb, article.name) %> 
                                             </td>
 
                                             <td class="text-center">
                                             
-                                                <%- statusHelper(user.status, "manager/users", user.id) %>
+                                                <%- statusHelper(article.status, "post-manager/articles", article.id) %>
                                                 
                                             </td> 
                                             
 
                                             <td class="text-center position-relative">
                                                 <input type="number"
-                                                    value="<%= user.ordering %>"
+                                                    value="<%= article.ordering %>"
                                                     class=" bg-warning chkOrdering form-control form-control-sm m-auto text-center ordering"
-                                                    style="width: 65px" min="1" data-link = <%= linkPrefix + 'change-ordering-ajax' %> data-id= <%= user.id %>>
+                                                    style="width: 65px" min="1" data-link = <%= linkPrefix + 'change-ordering-ajax' %> data-id= <%= article.id %>>
                                             </td>
 
                                             <td class="text-center">
-                                                <select class="custom-select bg-warning position-relative" name="selectGroup" data-id=<%= user.id %> data-link = <%= linkPrefix + 'change-group-ajax/'%>>
-                                                    <% groupsItems.forEach(item => { %>
-                                                        <option class="text-left bg-secondary" <%= (user.group.id == item.id) ? "selected": "" %>  value="<%= item.id %>"> <%= item.name %> </option>
+                                            
+                                                <%- spacecialHelper(article.spacecial, "post-manager/articles", article.id) %>
+                                                
+                                            </td> 
+
+                                            <td class="text-center">
+                                                <select class="custom-select bg-warning position-relative" name="selectCategory" data-id=<%= article.id %> data-link = <%= linkPrefix + 'change-category-ajax/'%>>
+                                                    <% categoryItems.forEach(item => { %>
+                                                        <option class="text-left bg-secondary" <%= (article.category.id == item.id) ? "selected": "" %>  value="<%= item.id %>"> <%= item.name %> </option>
                                                     <% }); %>
                                                    
                                                   </select>
                                             </td> 
 
-                                            <%- timesAndNameHelper("created",user.created.time, user.created.user_name) %> 
-                                            <%- timesAndNameHelper("update",user.modified.time, user.modified.user_name) %>
+                                            <%- timesAndNameHelper("created", article.created.time, article.created.user_name) %> 
+                                            <%- timesAndNameHelper("update", article.modified.time, article.modified.user_name) %>
                                         
 
                                             <td class="text-center">
-                                                <a href="<%= linkPrefix %>form/<%= user._id %>" class="rounded-circle btn btn-sm btn-info"  " title="Edit">
+                                                <a href="<%= linkPrefix %>form/<%= article._id %>" class="rounded-circle btn btn-sm btn-info"  " title="Edit">
                                                     <i class="fas fa-pencil-alt"></i>
                                                 </a>
                                                 
-                                                <a  href="javascript:deleteAjax('<%= linkPrefix %>destroy/<%=user. _id %>/<%=user.status%>')" data-id = "<%= user.id %>" class = "btn btn-sm btn-danger" title="Delete" >
+                                                <a  href="javascript:deleteAjax('<%= linkPrefix %>destroy/<%=article. _id %>/<%=article.status%>')" data-id = "<%= article.id %>" class = "btn btn-sm btn-danger" title="Delete" >
                                                     <i class="fas fa-trash-alt"></i>
                                                 </a>
             
@@ -200,7 +210,7 @@
 
     <!-- //Panigation -->
     <% if(data.length > 0){%>
-        <%- panigationHelper(params.panigations, "manager/users", params.currentStatus, params.keyword) %>
+        <%- panigationHelper(params.panigations, "/post-manager/articles/", params.currentStatus, params.keyword) %>
     <%} %> 
     <!-- End panigation -->
 

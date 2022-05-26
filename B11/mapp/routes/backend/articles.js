@@ -5,25 +5,25 @@ const util          = require('util');
 const moment        = require('moment');
 
 
-const controllerName= "users";
-const UsersModel    = require(__path_models  + 'users');
-const GroupsModel   = require(__path_schemas + "groups");
+const controllerName= "articles";
+const ArticlesModel    = require(__path_models  + 'articles');
+const CategorysModel   = require(__path_schemas + "category");
 const UtilsHelpers  = require(__base_app     + "helpers/Utils");
 const capitalizeFirstLetterHelpers  = require(__base_app     + "helpers/capitalizeFirstLetter");
 const paramsHelpers = require(__base_app     + "helpers/getParams");
 const systemConfig  = require(__path_configs + 'system');
-const validateUsers = require(__base_app     + `validations/${controllerName}`);
+const validateArticles = require(__base_app     + `validations/${controllerName}`);
 const notify        = require(__path_configs + 'notify');
 const fileHelper    = require(__base_app     + "helpers/file");
 const folderUpload  = __path_public + "uploads/"+ controllerName+ "/";
 const fileSizeMB    =  systemConfig.file_size_mb;
-const uploadAvatar  = fileHelper.uploadHelper('file', folderUpload, 6 , fileSizeMB);
+const uploadThumb  = fileHelper.uploadHelper('file', folderUpload, 6 , fileSizeMB);
 
 const pageTitle     = capitalizeFirstLetter(controllerName)+" Management - ";
 const pageTitleAdd  = pageTitle + "Add";
 const pageTitleEdit = pageTitle + "Edit";
 const pageTitleList = pageTitle + "List";
-const linksIndex    = `/${systemConfig.prefix_admin}/manager/${controllerName}`;
+const linksIndex    = `/${systemConfig.prefix_admin}/post-manager/${controllerName}`;
 const folderViewBe  = `pages/backend/${controllerName}/`;
 
 
@@ -36,29 +36,30 @@ router.get("/form(/:id)?", async (req, res, next) => {
   let getId   = paramsHelpers.getParams(req.params, "id", "");
   let data    = {
     _id       : "",
-    avatar : "",
+    thumb     : "",
+    spacecial : "",
     name      : "",
     ordering  : "",
     status    : "",
     content   : "",
-    group : {
+    category : {
       id : "",
       name: ""
     }
   }
-  let groupsItems = [];
-  await GroupsModel.find({}).select('id name').then((groups) => {
-    groupsItems = groups;
+  let categoryItems = [];
+  await CategorysModel.find({}).select('id name').then((categories) => {
+    categoryItems = categories;
   })
  
   if( getId === "" ){ //form Add
     req.session.destroy();
-    res.render(folderViewBe + "form", {data,  pageTitle  : pageTitleAdd,  errors, groupsItems, fileSizeMB});
+    res.render(folderViewBe + "form", {data,  pageTitle  : pageTitleAdd,  errors, categoryItems, fileSizeMB});
   }else{
      //form Edit
-    UsersModel.findById(getId).then((data) =>{
+    ArticlesModel.findById(getId).then((data) =>{
       req.session.destroy();
-      res.render(folderViewBe + "form", { data, pageTitle  : pageTitleEdit, errors, groupsItems, fileSizeMB});
+      res.render(folderViewBe + "form", { data, pageTitle  : pageTitleEdit, errors, categoryItems, fileSizeMB});
     });
   }
 });
@@ -66,26 +67,26 @@ router.get("/form(/:id)?", async (req, res, next) => {
 
 // Handler data form 
 router.post("/save", (req, res, next) => {
-    uploadAvatar (req, res,async (errUpload)=> {
+    uploadThumb (req, res, async (errUpload)=> {
         req.body   = JSON.parse(JSON.stringify(req.body));
-        let user   =  Object.assign(req.body);
-        let taskCurrent = (typeof user !==undefined && user.id !=="") ? "edit" : "add";
-        let errors = validateUsers.validator(req, errUpload, taskCurrent);
-        let nameGroup = "";
-        let groupsItems = [];
+        let article   =  Object.assign(req.body);
+        let taskCurrent = (typeof article !==undefined && article.id !=="") ? "edit" : "add";
+        let errors = validateArticles.validator(req, errUpload, taskCurrent);
+        let nameCategory = "";
+        let categoryItems = [];
 
-        await GroupsModel.find({}).select('id name').then((groups) => {
-          groupsItems = groups;
-          groupsItems.forEach((item,i)=>{
-            if(item.id === user.groups){
-               nameGroup = item.name;
+        await CategorysModel.find({}).select('id name').then((categorys) => {
+          categoryItems = categorys;
+          categoryItems.forEach((item,i)=>{
+            if(item.id === article.categorys){
+               nameCategory = item.name;
             }
           });
         });
         
     
-        let filter = { name:user.name, status:user.status, ordering: parseInt(user.ordering), content:user.content,
-          group : {id: user.groups, name: nameGroup},
+        let filter = { name:article.name, status:article.status, spacecial: article.spacecial, ordering: parseInt(article.ordering), content:article.content,
+          category : {id: article.category, name: article.nameCategory},
           modified  : {
             user_id   : "er32fsdf",
             user_name : "Founder",
@@ -94,36 +95,36 @@ router.post("/save", (req, res, next) => {
          
       
         if(errors.length <= 0){
-           if(user.id !== '' && typeof user.id !== undefined){ 
+           if(article.id !== '' && typeof article.id !== undefined){ 
              //Handler edit
              if(req.file === undefined || req.thumb === ''){ // no update img
-              user.avatar = user.img_old;
+              article.avatar = article.img_old;
             }
             else{ //update img
-              user.avatar = req.file.filename;
+              article.thumb = req.file.filename;
               await fileHelper.removeFile(folderUpload, req.body.img_old);
-              filter.avatar = user.avatar;
+              filter.thumb = article.thumb;
             }
-            await UsersModel.update(user.id, filter).then(results => {
+            await ArticlesModel.update(article.id, filter).then(results => {
                req.flash('success' , notify.UPDATE_SUCCESS, false);
                 res.redirect(linksIndex);
               });
     
            }else{ // Handler add 
             
-            filter = { name:user.name, status:user.status, ordering: parseInt(user.ordering), content:user.content,
-              group : {
-                id: user.groups,
-                
+            filter = { name:article.name, status:article.status, spacecial: article.spacecial, ordering: parseInt(article.ordering), content:article.content,
+              category : {
+                id: article.category,
+                name: nameCategory
               },
               created : {
-                user_id   : "dfdfd212",
+                user_id   : "er32fsdf",
                 user_name : "Founder",
                 time      : Date.now()
               },
               };
-              (req.file.filename !== undefined)? filter.avatar = req.file.filename: filter.avatar = "";
-            await UsersModel.add(filter).then( () => {
+              (req.file.filename !== undefined)? filter.thumb = req.file.filename: filter.thumb = "";
+            await ArticlesModel.add(filter).then( () => {
               req.flash('success', notify.ADD_SUCCESS, false)
               res.redirect(linksIndex);
             }); 
@@ -134,14 +135,14 @@ router.post("/save", (req, res, next) => {
           req.session.errors = errors;
           //Delete image when form error
           if(req.file !== undefined) await fileHelper.removeFile(folderUpload, req.file.filename);
-          res.redirect(linksIndex + '/form/'+user.id);
+          res.redirect(linksIndex + '/form/'+article.id);
         }
   
       })
-});
+    });
     
 
-//filter by status and page list users
+//filter by status and page list articles
 router.get("(/:status)?",async (req, res, next) => {
   let params             = {};
   params.ObjWhere        = {};
@@ -150,13 +151,13 @@ router.get("(/:status)?",async (req, res, next) => {
   params.getPageOnURL    = paramsHelpers.getParams(req.query, "page", 1);
   params.field_name      = paramsHelpers.getParams(req.session, "field_name", "name");
   params.get_type_sort   = paramsHelpers.getParams(req.session, "type_sort", "asc");
-  params.get_group_name  = paramsHelpers.getParams(req.session, "group_name", "novalue");
+  params.get_category_name  = paramsHelpers.getParams(req.session, "category_name", "novalue");
   
   params.set_type_sort   = ( params.get_type_sort==="asc") ?  params.get_type_sort = 'desc' :  params.get_type_sort = 'asc'; 
   params.sort            = {};
   params.sort[ params.field_name]=  params.set_type_sort;
     
-  params.filterStatusUsers = UtilsHelpers.filterStatusUsers( params.currentStatus);
+  params.filterStatusArticles = UtilsHelpers.filterStatusArticles( params.currentStatus);
   params.panigations     = {
     totalItemsPerpage : 10,
     currentPage       :  params.getPageOnURL,
@@ -173,30 +174,28 @@ router.get("(/:status)?",async (req, res, next) => {
       name: { $regex:  params.keyword, $options: "i" },
     };
   }
-   if( params.get_group_name !== "novalue" &&  params.get_group_name !==undefined){
-    params.ObjWhere = {'group.name':  params.get_group_name,}
+   if( params.get_category_name !== "novalue" &&  params.get_category_name !==undefined){
+    params.ObjWhere = {'category.name':  params.get_category_name,}
   }
   
-  let groupsItems = [];
-  await GroupsModel.find({}).select('id name').then((groups) => {
-    
-    groupsItems = groups;
+  let categoryItems = [];
+  await CategorysModel.find({}).select('id name').then((categorys) => {
+    categoryItems = categorys;
   });
   
-  await UsersModel.countItems( params.ObjWhere).then((data) => {
+  await ArticlesModel.countItems( params.ObjWhere).then((data) => {
     params.panigations.totalItems = data;
     
   });
   
-  UsersModel.listItems(params)
+  ArticlesModel.listItems(params)
            .then((data) => {
             res.render(`${folderViewBe}list`, {
               pageTitle: pageTitleList,
               moment,
               data,
               params,
-              groupsItems
-
+              categoryItems
             });
           });
   
@@ -207,7 +206,18 @@ router.get("/change-status/:id/:status",(req, res, next) => {
   let id             = paramsHelpers.getParams(req.params, "id", "");
   let currentStatus  = paramsHelpers.getParams(req.params, "status", "active");
   
-  UsersModel.changeStatus(id,currentStatus, option = {task: "update_one_status"}).then((result)=>{
+  ArticlesModel.changeStatus(id,currentStatus, option = {task: "update_one_status"}).then((result)=>{
+    res.send({'result': result, 'linksIndex': linksIndex});
+  });
+
+});
+
+// update one spacecial
+router.get("/change-spacecial/:id/:spacecial",(req, res, next) => {
+  let id                = paramsHelpers.getParams(req.params, "id", "");
+  let currentSpacecial  = paramsHelpers.getParams(req.params, "spacecial", "yes");
+  
+  ArticlesModel.changeSpacecial(id,currentSpacecial, option = {task: "update_one_spacecial"}).then((result)=>{
     res.send({'result': result, 'linksIndex': linksIndex});
   });
 
@@ -218,31 +228,32 @@ router.post('/change-ordering-ajax', (req, res, next)=>{
   let cid = req.body.id;
   let getOrdering = req.body.ordering;
   
-  UsersModel.changeOrderingAjax(cid, getOrdering).then((result)=>{
+  ArticlesModel.changeOrderingAjax(cid, getOrdering).then((result)=>{
   
     res.send({"message": notify.UPDATE_ORDERING_SUCCESS, "className": "success"});
   });
 });
 
-router.post('/change-group-ajax', (req, res, next)=>{
-  let idUser = req.body.id;
+router.post('/change-category-ajax', (req, res, next)=>{
+  let idArticle = req.body.id;
   
-  let getIDGroup = req.body.groupID;
-  UsersModel.changeGroupAjax(idUser, getIDGroup).then((result)=>{
+  let getIDCategory = req.body.categoryID;
+  let categoryName = req.body.categoryName;
+  ArticlesModel.changeCategoryAjax(idArticle, getIDCategory, categoryName).then((result)=>{
   
-    res.send({"message": notify.CHANGE_GROUPS_SUCCESS, "className": "success"});
+    res.send({"message": notify.CHANGE_CATEGORY_SUCCESS, "className": "success"});
   });
 });
 
-//Delete one users
+//Delete one articles
 router.get("/destroy/:id/:status",(req, res, next) => {
   let id             = paramsHelpers.getParams(req.params, "id", "");
-  UsersModel.delete(id).then((results) => {
+  ArticlesModel.delete(id).then((results) => {
     res.send({"message": notify.DELETE_SUCCESS, "className": "success", id});
   });
 });
 
-//  Action multil CRUD and change ordering for users
+//  Action multil CRUD and change ordering for articles
 router.post("/action",(req, res, next) => {
   
   let getAction     = req.body.action;
@@ -254,7 +265,7 @@ router.post("/action",(req, res, next) => {
     switch (getAction) {
       case "active":
        
-          UsersModel.changeStatus(getCid, getAction, option = {task : "update_many_status"}).then((results) => {
+          ArticlesModel.changeStatus(getCid, getAction, option = {task : "update_many_status"}).then((results) => {
             count  = results.matchedCount;
                   req.flash('success' ,util.format(notify.CHANGE_MULTI_STATUS_SUCCESS, count), false);
                   res.redirect(linksIndex);
@@ -263,24 +274,38 @@ router.post("/action",(req, res, next) => {
           break;
 
       case "inactive":
-            UsersModel.changeStatus(getCid, getAction, option = {task : "update_many_status"}).then((results) => {
+            ArticlesModel.changeStatus(getCid, getAction, option = {task : "update_many_status"}).then((results) => {
               count  = results.matchedCount;
                     req.flash('success' ,util.format(notify.CHANGE_MULTI_STATUS_SUCCESS, count), false);
                     res.redirect(linksIndex);
             });
          break;
+      case "yes":
+          ArticlesModel.changeSpacecial(getCid, getAction, option = {task : "update_many_spacecial"}).then((results) => {
+            count  = results.matchedCount;
+                  req.flash('success' ,util.format(notify.CHANGE_MULTI_SPACECIAL_SUCCESS, count), false);
+                  res.redirect(linksIndex);
+          });
+          break;
+
+      case "no":
+            ArticlesModel.changeSpacecial(getCid, getAction, option = {task : "update_many_spacecial"}).then((results) => {
+              count  = results.matchedCount;
+                    req.flash('success' ,util.format(notify.CHANGE_MULTI_SPACECIAL_SUCCESS, count), false);
+                    res.redirect(linksIndex);
+            });
+            break;
         
       case "delete":
-        UsersModel.delete(getCid).then((results) => {
+        ArticlesModel.delete(getCid).then((results) => {
           count += results.deletedCount;
           
           req.flash('success' , util.format(notify.DELETE_MULTI_SUCCESS, count), false);
           res.redirect(linksIndex);
           });
            break;
-      case "ordering":
-        
-        UsersModel.changeOrdering(getCid, getOrdering).then((results)=>{
+      case "ordering": 
+        ArticlesModel.changeOrdering(getCid, getOrdering).then((results)=>{
           req.flash('success' , util.format(notify.CHANGE_MULTI_ORDERING_SUCCESS, results), false);
           res.redirect(linksIndex);
       });
@@ -296,12 +321,6 @@ router.post("/action",(req, res, next) => {
   
 });
 
-// Filter groups for module users
-// router.post("/group-filter", (req, res, next)=>{
-//   req.session.group_name = req.body.group_name;
-//   res.redirect(linksIndex);
-  
-// });
 
 // Sort
 router.get("/sort(/:status)?/:field_name/:type_sort",(req, res, next) => {

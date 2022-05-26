@@ -1,9 +1,12 @@
 
 <%  
       
-const pageCategory              =    "category";
+const pageCategory           =    "category";
+const pageArticles           =    "articles";
 const pageManager            =    "manager";
-const linkPrefixCategory        = `${systemConfig.prefix_admin}/${pageCategory}/`;
+const pagePostManager        =    "post-manager";
+const linkPrefixCategory     = `${systemConfig.prefix_admin}/${pagePostManager}/${pageCategory}/`;
+const linkPrefixArticles     = `${systemConfig.prefix_admin}/${pagePostManager}/${pageArticles}/`;
 const linkPrefixManager      = `${systemConfig.prefix_admin}/${pageManager}/`;
 
 %> 
@@ -48,6 +51,16 @@ const linkPrefixManager      = `${systemConfig.prefix_admin}/${pageManager}/`;
                             <a href="<%= linkPrefixCategory %>" class="nav-link ml-2" data-active="index" >
                                 <i class="nav-icon fas fa-list-ul" style="font-size: 12px"></i>
                                 <p>Category</p>
+                            </a>
+                        </li>
+
+                    </ul>
+
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="<%= linkPrefixArticles %>" class="nav-link ml-2" data-active="index" >
+                                <i class="nav-icon fas fa-list-ul" style="font-size: 12px"></i>
+                                <p>Articles</p>
                             </a>
                         </li>
 

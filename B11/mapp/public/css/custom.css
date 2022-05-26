@@ -44,6 +44,9 @@ tr.my-read-only {
     height: auto;
     width: 60px;
 }
+#spacecial{
+    font-size: 22px;
+}
 
 #bulk-apply {
     position: relative;

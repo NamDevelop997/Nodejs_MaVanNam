@@ -5,5 +5,6 @@ module.exports  = {
     COLLECTION_CATEGORY   : "categories",
     COLLECTION_GROUPS     : "groups",
     COLLECTION_USERS      : "users",
+    COLLECTION_ARTICLES    : "articles",
 
 }

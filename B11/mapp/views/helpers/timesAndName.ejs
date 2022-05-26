@@ -1,24 +1,15 @@
 
-
 <% 
 
     timesAndNameHelper = (type,times, name) => {
         let XHTMLTimeandName= "";
+        let formatTime      = type === "created" ? "L" : "LTS L";
         
-        if (type === "created") {
-            XHTMLTimes = `
+        return `
             <td class="text-left position-relative">
                 <i class="fa fa-user text-primary"></i> ${(name) ?name: "---"} </br>
-                <i class="fa fa-clock text-success"></i> ${(times) ? moment(times).format('L'): "---"} 
+                <i class="fa fa-clock text-success"></i> ${(times) ? moment(times).format(formatTime): "---"} 
             </td>`;
-        }else if(type === "update"){
-            XHTMLTimes = `
-            <td class="text-left position-relative">
-                <i class="fa fa-user text-primary"></i> ${(name) ?name: "---"} </br>
-                <i class="fa fa-clock text-success"></i> ${(times) ? moment(times).format('LTS L'): "---"} 
-            </td>`;
-        }
-        return XHTMLTimes;
     }
 %>
 
