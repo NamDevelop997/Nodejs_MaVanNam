@@ -7,8 +7,10 @@ const UsersModel    = require("../../schemas/users");
 const ArticlesModel = require("../../schemas/articles");
 
 
+
 /* GET home page. */
 router.get('/', async(req, res, next) => {
+  
   let countItems    = 0 ;
   let countGroups   = 0 ;
   let countUsers    = 0 ;
@@ -29,7 +31,7 @@ router.get('/', async(req, res, next) => {
   await ArticlesModel.count({}).then((count) => { //get count Users
     countArticles = count;
   });
-  res.render('pages/backend/dashboard/index', { pageTitle: 'Dashboard' , countItems, countGroups, countUsers, countArticles });
+  res.render('pages/backend/dashboard/index', { pageTitle: 'Dashboard' , countItems, countGroups, countUsers, countArticles});
 });
 
 

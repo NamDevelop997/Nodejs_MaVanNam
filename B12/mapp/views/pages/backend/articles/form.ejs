@@ -32,11 +32,11 @@
                 </div>
                 
                 <div class="form-group row">
-                    <label for="form[thumb]" class="col-sm-2 col-form-label text-sm-right ">Thumb</label>
+                    <label for="imgInp" class="col-sm-2 col-form-label text-sm-right ">Thumb</label>
                     <div class="col-xs-12 col-sm-8 form-group" >
-                        <input type="file" id="form[thumb]" class="form-control form-control-sm" name ="file">
+                        <input type="file" id="imgInp" class="form-control form-control-sm" name ="file">
                         <p class="text-danger">Chú ý: File phải ở dạng hình ảnh ("jpg, jpeg, png, gif"), kích thước file từ <%= fileSizeMB %>MB trở xuống. </p>
-                        <img class="rounded " src="uploads/articles/<%= (data.thumb=='' || data.thumb == undefined)  ? 'no-img.jpg' : data.thumb %> " alt="img" style="max-width:12%">
+                        <img class="rounded "  id="imgPreview" src="uploads/articles/<%= (data.thumb=='' || data.thumb == undefined)  ? 'no-img.jpg' : data.thumb %> " alt="img" style="max-width:12%">
                     </div>
                 </div>
 

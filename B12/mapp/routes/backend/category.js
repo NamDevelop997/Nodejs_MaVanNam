@@ -31,7 +31,6 @@ const folderViewBe  = `pages/backend/${controllerName}/`;
 
 //Get Form: Add or Edit
 router.get("/form(/:id)?",  (req, res, next) => {
-  
   let errors  =  req.session.errors; 
   let getId   = paramsHelpers.getParams(req.params, "id", "");
   let data    = {
@@ -114,13 +113,8 @@ router.post("/save",(req, res, next) => {
      
 });
 
-router.get("/login", (req, res, next) => {
-  res.render(`${folderViewFe}login`, { pageTitle: "Login", layout: false });
-});
-
 //filter by status
 router.get("(/:status)?",async (req, res, next) => {
-  
   let params = {};
   params.ObjWhere        = {};
   params.currentStatus   = paramsHelpers.getParams(req.params, "status", "all");
@@ -162,6 +156,7 @@ router.get("(/:status)?",async (req, res, next) => {
               items,
               params,
               moment,
+
             });
           });
   

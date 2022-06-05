@@ -6,10 +6,11 @@
         <% include ./../../../helpers/sort%> 
         <% include ./../../../helpers/acp%> 
         <% include ./../../../helpers/selectGroupName%> 
+        <% include ./../../../helpers/filterOptions%> 
         <% include ./../../../helpers/selectOptions %> 
         <% include ./../../../helpers/capitalizeFirstLetter %> 
         <% include ./../../../helpers/images%> 
-
+        <% include ./../../../helpers/filterOptions%> 
        
     <%  
         const page       =    "users";
@@ -36,7 +37,7 @@
                  
                 </div>
 
-
+                <%- filterOptionsHelper(groupsItems, 'filterGroup', groupID, 'groups') %>
                 <div class="mb-1">
                     <form action="<%= linkPrefix %><%= params.currentStatus %>" method="GET">
                         <div class="input-group">
@@ -116,9 +117,10 @@
                                     
                                         <%- sortHelper(linkPrefix + 'sort/'+params.currentStatus+'/ordering/' + params.set_type_sort, params.set_type_sort, params.field_name,"ordering","text-danger" ) %>
 
-                                        <th class="text-center">
-                                            Group
-                                        </th>
+                                       
+                                        <%- sortHelper(linkPrefix + 'sort/'+params.currentStatus+'/group/' + params.set_type_sort, params.set_type_sort, params.field_name,"group","text-danger" ) %> 
+                                            
+                                       
 
                                         <%- sortHelper(linkPrefix + 'sort/'+params.currentStatus+'/created/' + params.set_type_sort, params.set_type_sort, params.field_name, "created", "text-danger" ) %> 
 

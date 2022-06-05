@@ -27,8 +27,6 @@ const linksIndex    = `/${systemConfig.prefix_admin}/manager/${controllerName}`;
 const folderViewBe  = `pages/backend/${controllerName}/`;
 
 
-
-
 //Get Form: Add or Edit
 router.get("/form(/:id)?", async (req, res, next) => {
   
@@ -144,6 +142,8 @@ router.post("/save", (req, res, next) => {
 //filter by status and page list users
 router.get("(/:status)?",async (req, res, next) => {
   let params             = {};
+  let groupID            = paramsHelpers.getParams(req.session, "group_id", "");
+
   params.ObjWhere        = {};
   params.currentStatus   = paramsHelpers.getParams(req.params, "status", "all");
   params.keyword         = paramsHelpers.getParams(req.query, "keyword", "");
@@ -151,7 +151,8 @@ router.get("(/:status)?",async (req, res, next) => {
   params.field_name      = paramsHelpers.getParams(req.session, "field_name", "name");
   params.get_type_sort   = paramsHelpers.getParams(req.session, "type_sort", "asc");
   params.get_group_name  = paramsHelpers.getParams(req.session, "group_name", "novalue");
-  
+  params.get_group_id    = paramsHelpers.getParams(req.session, "group_id", "");
+ 
   params.set_type_sort   = ( params.get_type_sort==="asc") ?  params.get_type_sort = 'desc' :  params.get_type_sort = 'asc'; 
   params.sort            = {};
   params.sort[ params.field_name]=  params.set_type_sort;
@@ -163,7 +164,15 @@ router.get("(/:status)?",async (req, res, next) => {
     totalItems        : 1,
     pageRanges        : 3
   };
+  
 
+  if(params.get_group_id !== "" ){
+    params.ObjWhere = {'group.id': params.get_group_id};
+  }
+  if(params.get_group_id=== 'all'){
+    params.ObjWhere = { };
+  }
+ 
   if ( params.currentStatus === "all") {
     if ( params.keyword !== "")  params.ObjWhere = { name: { $regex:  params.keyword, $options: "i" } };
    
@@ -179,7 +188,6 @@ router.get("(/:status)?",async (req, res, next) => {
   
   let groupsItems = [];
   await GroupsModel.find({}).select('id name').then((groups) => {
-    
     groupsItems = groups;
   });
   
@@ -195,7 +203,8 @@ router.get("(/:status)?",async (req, res, next) => {
               moment,
               data,
               params,
-              groupsItems
+              groupsItems,
+              groupID
 
             });
           });
@@ -224,6 +233,7 @@ router.post('/change-ordering-ajax', (req, res, next)=>{
   });
 });
 
+//Change group Ajax
 router.post('/change-group-ajax', (req, res, next)=>{
   let idUser = req.body.id;
   
@@ -234,7 +244,7 @@ router.post('/change-group-ajax', (req, res, next)=>{
   });
 });
 
-//Delete one users
+//Delete one users Ajax
 router.get("/destroy/:id/:status",(req, res, next) => {
   let id             = paramsHelpers.getParams(req.params, "id", "");
   UsersModel.delete(id).then((results) => {
@@ -312,6 +322,13 @@ router.get("/sort(/:status)?/:field_name/:type_sort",(req, res, next) => {
   if(req.session.status !== "all"){
      res.redirect(linksIndex + "/" + req.session.status);
   }
+  res.redirect(linksIndex);
+  
+ });
+
+// Filter Groups 
+router.get("/filter-group/:group_id", (req, res, next) => {
+  req.session.group_id  = paramsHelpers.getParams(req.params, "group_id", "");
   res.redirect(linksIndex);
   
  });

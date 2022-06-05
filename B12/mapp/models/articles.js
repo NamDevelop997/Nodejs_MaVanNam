@@ -125,6 +125,8 @@ module.exports = {
         if (Array.isArray(cid)) {
             for (const key of cid) {
               await ArticlesData.findById(key).then((data)=>{
+               
+                
                   fileHelper.removeFile(filePath, data.avatar);
                });
                  
@@ -132,7 +134,7 @@ module.exports = {
                 return ArticlesData.deleteMany({_id : cid});
         }else{
           await ArticlesData.findById(cid).then((data)=>{
-            fileHelper.removeFile(filePath, data.avatar);
+            fileHelper.removeFile(filePath, data.thumb);
            });
                 return ArticlesData.findOneAndRemove({ _id: cid });
           }

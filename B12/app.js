@@ -8,6 +8,7 @@ const cookieParser  = require('cookie-parser');
 const session       = require('express-session');
 const validator     = require('express-validator');
 
+
 //Define path global app
 global.__base_app     = __dirname  + ('/mapp/');
 global.__path_configs = __base_app + 'config/';

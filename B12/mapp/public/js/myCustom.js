@@ -61,6 +61,7 @@ $(function(){
             $(this).append(file).css({display: 'none'});
         });
     
+        // validate slug 
  changeToSlug= (text) =>{
      
     let textSlug =text;
@@ -91,8 +92,61 @@ $(function(){
           
     }
 
-      $('input[name=name]').keyup(function () { 
+    // create slug
+    $('input[name=name]').keyup(function () { 
           $('input[name=slug]').val(changeToSlug($(this).val()));
-      });
-    
-});
+    });
+
+    // filter groups
+    $('select[name=filterGroup]').change(function(){
+          let path         = window.location.pathname.split('/');
+         
+          let linkRedirect = '/' + path[1] + '/'+ path[2] + '/' + path[3] +'/filter-group/'+$(this).val() ;
+       
+          window.location.pathname = linkRedirect;
+
+    });
+
+     // filter categories
+     $('select[name=filterCategory]').change(function(){
+        let path         = window.location.pathname.split('/');
+        let linkRedirect = '/' + path[1] + '/'+ path[2] + '/' + path[3] +'/filter-category/'+ $(this).val() ;
+        
+        window.location.pathname = linkRedirect;
+
+  });
+
+    // Preview an img before it is uploaded to sever
+        imgInp.onchange = evt => {
+        const [file] = imgInp.files;
+        if (file) {
+            imgPreview.src = URL.createObjectURL(file)
+        }
+    }
+}); 
+
+//Active menu sidebar
+let path = window.location.pathname.split('/')
+    if(path[2] == 'post-manager'){
+        $('#post-manager').addClass( "menu-open rounded" );
+        if(path[3] =="category"){
+            $('#category').addClass( "bg-primary rounded" );
+        }
+        if(path[3] =="articles"){
+            $('#articles').addClass( "bg-primary rounded" );
+        }
+    } 
+    if(path[2] == 'manager'){
+        $('#manager').addClass( "menu-open" );
+        if(path[3] =="groups"){
+            $('#groups').addClass( "bg-primary rounded" );
+        }
+        if(path[3] =="users"){
+            $('#users').addClass( "bg-primary rounded" );
+        }
+    }
+    if(path[2] == 'dashboard'){
+        $('#dashboard').addClass( "bg-primary rounded" );
+    }
+
+//End active menu sidebar

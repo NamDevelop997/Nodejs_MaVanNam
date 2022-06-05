@@ -71,7 +71,16 @@ tr.my-read-only {
     background: rgb(201 28 124 / 62%);
     border-color: #d32535;
 }
-
+ul li.nav-item{
+    margin-bottom: -3px;
+}
+.nav-treeview>.nav-item>.nav-link{
+    margin: 0 !important;
+}
+.nav-treeview>.nav-item>.nav-link:hover {
+    color: #defd2f !important;
+    /* background-color: #007bff!important; */
+}
 #btn-submit {
     margin-left: 15%;
 }

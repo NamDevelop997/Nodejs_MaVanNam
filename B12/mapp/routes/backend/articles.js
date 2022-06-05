@@ -139,12 +139,15 @@ router.post("/save", (req, res, next) => {
         }
   
       })
-    });
+});
     
 
 //filter by status and page list articles
 router.get("(/:status)?",async (req, res, next) => {
+  
   let params             = {};
+  let categoryID         = paramsHelpers.getParams(req.session, "category_id", "");
+
   params.ObjWhere        = {};
   params.currentStatus   = paramsHelpers.getParams(req.params, "status", "all");
   params.keyword         = paramsHelpers.getParams(req.query, "keyword", "");
@@ -152,6 +155,8 @@ router.get("(/:status)?",async (req, res, next) => {
   params.field_name      = paramsHelpers.getParams(req.session, "field_name", "name");
   params.get_type_sort   = paramsHelpers.getParams(req.session, "type_sort", "asc");
   params.get_category_name  = paramsHelpers.getParams(req.session, "category_name", "novalue");
+  params.get_category_id    = paramsHelpers.getParams(req.session, "category_id", "");
+
   
   params.set_type_sort   = ( params.get_type_sort==="asc") ?  params.get_type_sort = 'desc' :  params.get_type_sort = 'asc'; 
   params.sort            = {};
@@ -164,6 +169,14 @@ router.get("(/:status)?",async (req, res, next) => {
     totalItems        : 1,
     pageRanges        : 3
   };
+
+
+  if(params.get_category_id !== "" ){
+    params.ObjWhere = {'category.id': params.get_category_id};
+  }
+  if(params.get_category_id === 'all'){
+    params.ObjWhere = {};
+  }
 
   if ( params.currentStatus === "all") {
     if ( params.keyword !== "")  params.ObjWhere = { name: { $regex:  params.keyword, $options: "i" } };
@@ -195,7 +208,8 @@ router.get("(/:status)?",async (req, res, next) => {
               moment,
               data,
               params,
-              categoryItems
+              categoryItems,
+              categoryID
             });
           });
   
@@ -333,5 +347,13 @@ router.get("/sort(/:status)?/:field_name/:type_sort",(req, res, next) => {
   }
   res.redirect(linksIndex);
   
+ });
+
+
+ // Filter Groups 
+router.get("/filter-category/:category_id", (req, res, next) => {
+  req.session.category_id  = paramsHelpers.getParams(req.params, "category_id", "");
+  
+  res.redirect(linksIndex);
  });
 module.exports = router;
