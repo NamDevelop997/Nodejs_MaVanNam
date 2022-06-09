@@ -1,0 +1,7 @@
+<% statusHelper = (status, type, id) => {
+    let links    =  `${systemConfig.prefix_admin}/${type}/change-status/${id}/${status}`;
+    let colorBtn = (status == "active") ?"success": "danger";
+    let icon     = (status == "active") ?"check": "minus";
+        return `<a href="javascript:changeStatus('${links}')" id= "status" class = "status-${id} position-relative"><i class="fa fa-${icon}-circle text-${colorBtn}"></i></a>`;
+}
+%>

@@ -1,0 +1,7 @@
+<% imgHelper = (folderUpload, imgName, alt = "Image") => {
+    if (imgName == "" || imgName == undefined) {
+        imgName = "no-img.jpg";
+    }
+    return `<img class="rounded" src="${folderUpload}${imgName}" alt="${alt}" style="max-width:100%">`;
+}
+%>

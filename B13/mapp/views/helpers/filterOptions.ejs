@@ -1,0 +1,26 @@
+
+<% include ./capitalizeFirstLetter %>  
+
+
+<% 
+
+    filterOptionsHelper = (arrOptions, name ,activeOption, field_name) => {
+        let XHTMLOptions = "";
+        let selected = "";
+        if (arrOptions.length > 0) {
+                arrOptions.forEach((item) => {
+                (activeOption === item.id) ? selected = "selected" : selected = "" ;
+                XHTMLOptions += `<option value="${item.id}" ${selected}> ${capitalizeFirstLetter(item.name)} </option>`;
+            });
+        }
+        return `
+        <div class="form-group row">
+                <select id="form[${name}]" name="${name}" class="custom-select custom-select-sm" style=" min-width:auto">
+                    <option value="all">All ${field_name}</option>
+                    ${XHTMLOptions}
+                </select>
+        </div>
+        `;
+    }
+
+%> 

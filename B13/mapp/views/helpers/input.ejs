@@ -1,0 +1,12 @@
+<% 
+
+    inputHelper = (label, type, name, data, typeInput ) => {
+        return `
+            <label for="form[${name}]" class="col-sm-2 col-form-label text-sm-right">${label}</label>
+            <div class="col-xs-12 col-sm-8">
+                <input type="${type}" id="form[${name}]" name="${name}" placeholder="Enter ordering here..." value="${data}" min="0" class="form-control form-control-sm" ${typeInput}>
+            </div>
+        `;
+    }
+
+%> 
