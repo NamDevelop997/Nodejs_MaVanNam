@@ -77,6 +77,12 @@
                 <%- selectOptionsHelper(categoryItems, 'category', data.category.id) %> 
 
                 <div class="form-group row">
+                    <label for="form[short_content]" class="col-sm-2 col-form-label text-sm-right ">Short content</label>
+                    <div class="col-xs-12 col-sm-8">
+                        <input type="text" id="form[short_content]" name="short_content" placeholder="" value="<%= data.short_content %>" placeholder="Enter user name here..." class="form-control form-control-sm">
+                    </div>
+                </div>
+                <div class="form-group row">
                     <%- textAreaHelper("Content","content",data.content) %> 
                 </div>
                 <input type="hidden" name="img_old" value="<%= data.thumb %>">

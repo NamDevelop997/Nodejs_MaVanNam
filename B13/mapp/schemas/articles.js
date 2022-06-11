@@ -9,6 +9,7 @@ const schema = new mongoose.Schema({
   ordering   : Number,
   status     : String,
   content    : String,
+  short_content    : String,
   category   : {
     id  : String,
     name: String,

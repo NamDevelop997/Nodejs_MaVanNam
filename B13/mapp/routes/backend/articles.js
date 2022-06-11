@@ -39,6 +39,7 @@ router.get("/form(/:id)?", async (req, res, next) => {
     ordering  : "",
     status    : "",
     content   : "",
+    short_content   : "",
     category : {
       id : "",
       name: ""
@@ -88,7 +89,7 @@ router.post("/save", (req, res, next) => {
         });
         
     
-        let filter = { name:article.name, status:article.status, spacecial: article.spacecial, ordering: parseInt(article.ordering), content:article.content,
+        let filter = { name:article.name, status:article.status, spacecial: article.spacecial, ordering: parseInt(article.ordering), content:article.content,  short_content:article.short_content,
           category : {id: article.category, name: nameCategory},
           modified  : {
             user_id   : "er32fsdf",
@@ -115,7 +116,7 @@ router.post("/save", (req, res, next) => {
     
            }else{ // Handler add 
             
-            filter = { name:article.name, status:article.status, spacecial: article.spacecial, ordering: parseInt(article.ordering), content:article.content,
+            filter = { name:article.name, status:article.status, spacecial: article.spacecial, ordering: parseInt(article.ordering), content:article.content,  short_content:article.short_content,
               category : {
                 id: article.category,
                 name: nameCategory

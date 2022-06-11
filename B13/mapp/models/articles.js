@@ -156,11 +156,26 @@ module.exports = {
 
   // For frontend
     listItemsSpecial: (params= null, option= null) =>{
+      let filter = {};
+      let select = '';
+      let limit  = 4 ;
+      let sort   = 'desc';
+
+      if(option.task == "list-items-special"){
+          filter = {status: 'active', spacecial: 'yes'};
+          select = 'name thumb category.name created.user_name created.time';
+      }
+
+      if(option.task == "list-items-latest-news"){
+          filter = {status: 'active'};
+          select = 'name thumb short_content category.name created.user_name created.time';
+    }
+
       return ArticlesData
-      .find({status: 'active', spacecial: 'yes'})
-      .select('name thumb content category.name created.user_name created.time')
-      .limit(4)
-      .sort('desc');
+        .find(filter)
+        .select(select)
+        .limit(limit)
+        .sort(sort)
     }
   // End for frontend
     

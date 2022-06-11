@@ -12,6 +12,8 @@ module.exports = {
         req.checkBody('ordering', "Vui lòng chọn giá trị từ 1-999.").isInt({min: 1, max: 999});
         req.checkBody('category', "Vui lòng chọn group.").notEmpty();
         req.checkBody('content', "Vui lòng tạo content.").notEmpty();
+        req.checkBody('short_content', "Vui lòng tạo mô tả ngắn bài viết.").notEmpty();
+        req.checkBody('short_content', "Chiều dài từ 10-200 kí tự.").isLength({min:10, max:200});
 
         let errors = req.validationErrors() !== false ? req.validationErrors() : [];
         

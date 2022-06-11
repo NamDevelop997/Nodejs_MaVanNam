@@ -10,15 +10,22 @@ const layoutFE      = `frontend/frontend`;
 
 
 router.get('/', async (req, res) => {
-  let listItemsSpecial = [];
-  await ArticlesModel.listItemsSpecial().then((data)=>{
+  let listItemsSpecial    = [];
+  let listItemsLatestNews = [];
+
+  await ArticlesModel.listItemsSpecial(null, {task : "list-items-special"}).then((data)=>{
     listItemsSpecial = data;
   });
 
+  await ArticlesModel.listItemsSpecial(null, {task : "list-items-latest-news"}).then((data)=>{
+    listItemsLatestNews = data;
+  });
+  
   res.render(folderViewFE, {
       layout: layoutFE,
       topPost: true,
       listItemsSpecial,
+      listItemsLatestNews,
       moment
   })
 });
