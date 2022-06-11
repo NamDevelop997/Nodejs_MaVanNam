@@ -26,9 +26,6 @@ const pageTitleList = pageTitle + "List";
 const linksIndex    = `/${systemConfig.prefix_admin}/post-manager/${controllerName}`;
 const folderViewBe  = `admin/pages/backend/${controllerName}/`;
 
-
-
-
 //Get Form: Add or Edit
 router.get("/form(/:id)?", async (req, res, next) => {
   
@@ -68,12 +65,18 @@ router.get("/form(/:id)?", async (req, res, next) => {
 // Handler data form 
 router.post("/save", (req, res, next) => {
     uploadThumb (req, res, async (errUpload)=> {
-        req.body   = JSON.parse(JSON.stringify(req.body));
-        let article   =  Object.assign(req.body);
-        let taskCurrent = (typeof article !==undefined && article.id !=="") ? "edit" : "add";
-        let errors = validateArticles.validator(req, errUpload, taskCurrent);
+        req.body     = JSON.parse(JSON.stringify(req.body));
+        let article  =  Object.assign(req.body);
+        let taskCurrent  = (typeof article !==undefined && article.id !=="") ? "edit" : "add";
+        let errors       = validateArticles.validator(req, errUpload, taskCurrent);
         let nameCategory = "";
         let categoryItems = [];
+        await CategorysModel.findById(article.category).then((data)=>{
+          nameCategory = data.name;
+        });
+        
+          
+        
 
         await CategorysModel.find({}).select('id name').then((categorys) => {
           categoryItems = categorys;
@@ -86,7 +89,7 @@ router.post("/save", (req, res, next) => {
         
     
         let filter = { name:article.name, status:article.status, spacecial: article.spacecial, ordering: parseInt(article.ordering), content:article.content,
-          category : {id: article.category, name: article.nameCategory},
+          category : {id: article.category, name: nameCategory},
           modified  : {
             user_id   : "er32fsdf",
             user_name : "Founder",
@@ -95,8 +98,8 @@ router.post("/save", (req, res, next) => {
          
       
         if(errors.length <= 0){
-           if(article.id !== '' && typeof article.id !== undefined){ 
-             //Handler edit
+           if(article.id !== '' && typeof article.id !== undefined){ //Handler edit
+             
              if(req.file === undefined || req.thumb === ''){ // no update img
               article.avatar = article.img_old;
             }
@@ -248,13 +251,16 @@ router.post('/change-ordering-ajax', (req, res, next)=>{
   });
 });
 
-router.post('/change-category-ajax', (req, res, next)=>{
+router.post('/change-category-ajax', async (req, res, next)=>{
   let idArticle = req.body.id;
   
   let getIDCategory = req.body.categoryID;
-  let categoryName = req.body.categoryName;
-  ArticlesModel.changeCategoryAjax(idArticle, getIDCategory, categoryName).then((result)=>{
+  let categoryName = "";
+  await CategorysModel.findById(getIDCategory).then((data)=>{
+    categoryName = data.name;
+  });
   
+  ArticlesModel.changeCategoryAjax(idArticle, getIDCategory, categoryName).then((result)=>{
     res.send({"message": notify.CHANGE_CATEGORY_SUCCESS, "className": "success"});
   });
 });

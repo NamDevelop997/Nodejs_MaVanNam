@@ -5,6 +5,7 @@ const fileHelper    = require(__base_app   + "helpers/file");
 
 module.exports = {
 
+  // For backend
     listItems: (params, option = null) => {
         return ArticlesData.find(params.ObjWhere)
         .select("name status ordering created category modified thumb spacecial")
@@ -150,7 +151,18 @@ module.exports = {
 
     findById: (cid) =>{
         return  ArticlesData.findById({_id : cid});
+    },
+  // end for backend
+
+  // For frontend
+    listItemsSpecial: (params= null, option= null) =>{
+      return ArticlesData
+      .find({status: 'active', spacecial: 'yes'})
+      .select('name thumb content category.name created.user_name created.time')
+      .limit(4)
+      .sort('desc');
     }
+  // End for frontend
     
 }
 

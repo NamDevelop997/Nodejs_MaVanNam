@@ -1,0 +1,12 @@
+
+body {
+    font-family: Arial, Helvetica, sans-serif ;
+
+}
+.details .category a {
+    background-color: #5864C4 !important;
+    color: white !important;
+}
+.details .category a:hover {
+    opacity: 1 !important;
+}

@@ -69,8 +69,12 @@ router.post("/save", (req, res, next) => {
         let user   =  Object.assign(req.body);
         let taskCurrent = (typeof user !==undefined && user.id !=="") ? "edit" : "add";
         let errors = validateUsers.validator(req, errUpload, taskCurrent);
-        let nameGroup = "";
+        let nameGroup   = "";
         let groupsItems = [];
+
+        await GroupsModel.findById(user.groups).then((data)=>{
+          nameGroup = data.name;
+        });
 
         await GroupsModel.find({}).select('id name').then((groups) => {
           groupsItems = groups;
@@ -112,7 +116,7 @@ router.post("/save", (req, res, next) => {
             filter = { name:user.name, status:user.status, ordering: parseInt(user.ordering), content:user.content,
               group : {
                 id: user.groups,
-                
+                name: nameGroup
               },
               created : {
                 user_id   : "dfdfd212",
@@ -234,11 +238,14 @@ router.post('/change-ordering-ajax', (req, res, next)=>{
 });
 
 //Change group Ajax
-router.post('/change-group-ajax', (req, res, next)=>{
-  let idUser = req.body.id;
-  
-  let getIDGroup = req.body.groupID;
-  UsersModel.changeGroupAjax(idUser, getIDGroup).then((result)=>{
+router.post('/change-group-ajax', async (req, res, next)=>{
+  let idUser     = req.body.id;
+  let getIDGroup = req.body.groupID; 
+  let getGroupsName = "";
+  await GroupsModel.findById(getIDGroup).then((data)=>{
+    getGroupsName = data.name;
+  });
+  UsersModel.changeGroupAjax(idUser, getIDGroup, getGroupsName).then((result)=>{
   
     res.send({"message": notify.CHANGE_GROUPS_SUCCESS, "className": "success"});
   });
