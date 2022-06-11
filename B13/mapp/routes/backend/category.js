@@ -19,14 +19,12 @@ const folderUpload     = __path_public + "uploads/"+ controllerName + "/";
 const fileSizeMB       =  systemConfig.file_size_mb;
 const uploadThumb      = fileHelper.uploadHelper('file', folderUpload, 6 , fileSizeMB);
 
-
-
 const pageTitle     = capitalizeFirstLetter(controllerName)+ " Management - ";
 const pageTitleAdd  = pageTitle + "Add";
 const pageTitleEdit = pageTitle + "Edit";
 const pageTitleList = pageTitle + "List";
 const linksIndex    = `/${systemConfig.prefix_admin}/post-manager/${controllerName}`;
-const folderViewBe  = `pages/backend/${controllerName}/`;
+const folderViewBe  = `admin/pages/backend/${controllerName}/`;
 
 
 //Get Form: Add or Edit

@@ -24,7 +24,7 @@ const pageTitleAdd  = pageTitle + "Add";
 const pageTitleEdit = pageTitle + "Edit";
 const pageTitleList = pageTitle + "List";
 const linksIndex    = `/${systemConfig.prefix_admin}/manager/${controllerName}`;
-const folderViewBe  = `pages/backend/${controllerName}/`;
+const folderViewBe  = `admin/pages/backend/${controllerName}/`;
 
 
 //Get Form: Add or Edit

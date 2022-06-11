@@ -6,6 +6,8 @@ const GroupsModel   = require("../../schemas/groups");
 const UsersModel    = require("../../schemas/users");
 const ArticlesModel = require("../../schemas/articles");
 
+const folderViewBe  = 'admin/pages/backend/dashboard/index';
+
 
 
 /* GET home page. */
@@ -31,7 +33,7 @@ router.get('/', async(req, res, next) => {
   await ArticlesModel.count({}).then((count) => { //get count Users
     countArticles = count;
   });
-  res.render('pages/backend/dashboard/index', { pageTitle: 'Dashboard' , countItems, countGroups, countUsers, countArticles});
+  res.render(folderViewBe, { pageTitle: 'Dashboard' , countItems, countGroups, countUsers, countArticles});
 });
 
 

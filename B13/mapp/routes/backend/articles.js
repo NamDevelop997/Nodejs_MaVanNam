@@ -5,26 +5,26 @@ const util          = require('util');
 const moment        = require('moment');
 
 
-const controllerName= "articles";
+const controllerName   = "articles";
 const ArticlesModel    = require(__path_models  + 'articles');
 const CategorysModel   = require(__path_schemas + "category");
-const UtilsHelpers  = require(__base_app     + "helpers/Utils");
+const UtilsHelpers     = require(__base_app     + "helpers/Utils");
 const capitalizeFirstLetterHelpers  = require(__base_app     + "helpers/capitalizeFirstLetter");
-const paramsHelpers = require(__base_app     + "helpers/getParams");
-const systemConfig  = require(__path_configs + 'system');
+const paramsHelpers    = require(__base_app     + "helpers/getParams");
+const systemConfig     = require(__path_configs + 'system');
 const validateArticles = require(__base_app     + `validations/${controllerName}`);
-const notify        = require(__path_configs + 'notify');
-const fileHelper    = require(__base_app     + "helpers/file");
-const folderUpload  = __path_public + "uploads/"+ controllerName+ "/";
-const fileSizeMB    =  systemConfig.file_size_mb;
-const uploadThumb  = fileHelper.uploadHelper('file', folderUpload, 6 , fileSizeMB);
+const notify           = require(__path_configs + 'notify');
+const fileHelper       = require(__base_app     + "helpers/file");
+const folderUpload     = __path_public + "uploads/"+ controllerName+ "/";
+const fileSizeMB       =  systemConfig.file_size_mb;
+const uploadThumb      = fileHelper.uploadHelper('file', folderUpload, 6 , fileSizeMB);
 
 const pageTitle     = capitalizeFirstLetter(controllerName)+" Management - ";
 const pageTitleAdd  = pageTitle + "Add";
 const pageTitleEdit = pageTitle + "Edit";
 const pageTitleList = pageTitle + "List";
 const linksIndex    = `/${systemConfig.prefix_admin}/post-manager/${controllerName}`;
-const folderViewBe  = `pages/backend/${controllerName}/`;
+const folderViewBe  = `admin/pages/backend/${controllerName}/`;
 
 
 
