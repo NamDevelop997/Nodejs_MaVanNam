@@ -2,13 +2,16 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8 col-sm-12 col-xs-12">
-                <!-- Headline -->
+                <% if (topPost) { %>
+                 <!-- Headline -->
                     <% include ../../elements/headline %> 
                 <!-- End headline -->
 
                 <!-- Slide featured -->
                     <% include ../../elements/slide-featured %> 
                 <!-- End Slide featured -->
+                <% } %>
+                
 
                 
                 <!-- Latest-news -->

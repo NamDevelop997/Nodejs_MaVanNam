@@ -5,6 +5,7 @@ const fileHelper      = require(__base_app     + "helpers/file");
 
 module.exports = {
 
+    //For backend
     listCategory: (params, option = null) => {
         return CategoryData.find(params.ObjWhere)
         .select("name status ordering created modified slug thumb")
@@ -110,7 +111,28 @@ module.exports = {
 
     findById: (cid) =>{
         return  CategoryData.findById({_id : cid});
+    },
+    //End for backend
+    
+   // For frontend
+   listItemsCategory: (params= null, option= null) =>{
+    let filter = {};
+    let select = '';
+    let sort   = 'desc';
+
+    if( option.task == "items-category-in-menu"){
+        filter = {status: 'active'};
+        select = 'name thumb slug created.user_name created.time';
     }
+
+    
+
+    return CategoryData
+      .find(filter)
+      .select(select)
+      .sort(sort)
+  }
+    // End for frontend
     
 }
 

@@ -42,9 +42,6 @@ app.use(flash(app,{
   viewName: 'admin/pages/backend/notification',
 }));
 
-
-
-// app.use(body(),);
 var expressLayouts = require('express-ejs-layouts');
 const mongoose = require('mongoose');
 const { dirname } = require('path');

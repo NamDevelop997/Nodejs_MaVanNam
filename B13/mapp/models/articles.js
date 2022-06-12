@@ -169,7 +169,11 @@ module.exports = {
       if(option.task == "list-items-latest-news"){
           filter = {status: 'active'};
           select = 'name thumb short_content category.name created.user_name created.time';
-    }
+      }
+        if( option.task == "items-in-category"){
+          filter = {status: 'active', 'CategoryData.id': params.id};
+          select = 'name thumb slug created.user_name created.time';
+      }
 
       return ArticlesData
         .find(filter)
